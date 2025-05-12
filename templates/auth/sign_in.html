@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+      <script defer src="/static/js/sdk/auth.js" ></script>
+   </head>
+   <body class="min-h-screen flex items-center justify-center bg-white">
+      <div class="w-full max-w-sm md:max-w-md lg:max-w-lg p-6 md:p-10">
+         <h1 class="text-4xl md:text-5xl font-bold text-center mb-10 tracking-wider">SQUALL</h1>
+         <form id="login_form" class="space-y-6">
+            <div>
+               <label for="user_id" class="block text-xl md:text-2xl font-medium text-gray-900 mb-2">ID :</label>
+               <input required
+                      minlength="1"
+                  type="text"
+                  id="user_id"
+                  name="user_id"
+                  placeholder="아이디를 입력해주세요"
+                  class="w-full px-6 py-4 rounded-2xl bg-gray-100 focus:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+                  />
+            </div>
+            <div>
+               <label for="password" class="block text-xl md:text-2xl font-medium text-gray-900 mb-2">PW :</label>
+               <input required
+                      minlength="1"
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="비밀번호를 입력해주세요"
+                  class="w-full px-6 py-4 rounded-2xl bg-gray-100 focus:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
+                  />
+            </div>
+            <div class="flex flex-col sm:flex-row gap-y-2 items-center justify-between mt-8 space-y-4 sm:space-y-0">
+               <button id="sign_in_btn"
+
+                  class="w-full sm:w-auto px-8 py-3 bg-blue-500 text-white text-lg font-semibold rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+               로그인
+               </button>
+                <button>
+                    <a href="#" id="signUp" class="text-gray-400 hover:text-gray-600 text-lg">회원가입</a>
+                </button>
+
+            </div>
+         </form>
+      </div>
+   </body>
+    <script>
+        document.getElementById("sign_in_btn")?.addEventListener("click", async (e)=>{
+            const formDiv = document.getElementById("login_form")
+            const formData = new FormData(formDiv);
+            const res = await AuthHelper.sign_in(formData.get("user_id"), formData.get("password"))
+            console.log(res)
+            if(res.error){
+                alert(res.error)
+            }
+            else{
+                alert("로그인 성공")
+            }
+
+        })
+
+    </script>
+</html>

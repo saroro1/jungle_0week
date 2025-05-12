@@ -1,13 +1,13 @@
 from flask import Flask
 
+import main_router
 from constant import DBContainer
-from router import auth_router
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 from pymongo import MongoClient
 
-app.register_blueprint(auth_router)
-
+app.register_blueprint(main_router.html.auth_route)
+app.register_blueprint(main_router.api.auth_api_router)
 client = MongoClient('localhost', 27017)
 db = client['acid_rain']
 ranking_db = db['ranking']

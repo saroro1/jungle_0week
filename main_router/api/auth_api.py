@@ -5,10 +5,20 @@ from flask import request, Blueprint, jsonify
 from constant import DBContainer
 from type.req import LoginReq, SignUpReq
 
-auth_router = Blueprint("auth", __name__, url_prefix="/api/auth")
+auth_api_router = Blueprint("auth_api", __name__, url_prefix="/api/auth")
 
 
-@auth_router.route("/sign_in", methods=["POST"])
+@auth_api_router.route("/check_duplicate/<id>", methods=["GET"])
+def check_duplicate(id: str):
+    try:
+        user = DBContainer.user_db.find_one({"id": id})
+        return jsonify({"is_duplicated": True if user else False})
+
+    except Exception as e:
+        pass
+
+
+@auth_api_router.route("/sign_in", methods=["POST"])
 def sign_in():
     try:
         data = request.get_json()
@@ -33,7 +43,7 @@ def sign_in():
         return jsonify({"error": "올바르지 않은 요청입니다"}), 400
 
 
-@auth_router.route("/sign_up", methods=["POST"])
+@auth_api_router.route("/sign_up", methods=["POST"])
 def sign_up():
     try:
         data = request.get_json()
@@ -46,6 +56,8 @@ def sign_up():
         sign_up_req.password = password_result.decode("UTF-8")
         if len(sign_up_req.nickname) > 20:
             return jsonify({"error": "별명은 20자를 넘을 수 없습니다."}), 400
+        if sign_up_req.password == "" or sign_up_req.nickname == "" or sign_up_req.id == "":
+            return jsonify({"error": "잘못된 요청입니다."}), 400
         DBContainer.user_db.insert_one(sign_up_req.__dict__)
         return jsonify({
             data: {

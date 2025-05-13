@@ -239,10 +239,10 @@ function startGame(initLives = 3) {
 }
 
 // 게임 오버 함수
-function gameOve() {
+async function gameOver() {
     sounds["bgm"].pause();
     sounds["bgm"].currentTime = 0;
-    GameHelper.
+    await GameHelper.setHighscore("kr",gameScore);
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
@@ -314,7 +314,7 @@ function checkInput(e) {
 }
 
 // 이벤트 리스너 설정
-startButton.addEventListener('click', () => startGame(1));
+startButton.addEventListener('click', () => startGame(3));
 restartButton.addEventListener('click', () => startGame(3)); // 다시 시작 버튼도 startGame 호출
 goToMainButton.addEventListener('click', ()=>{
     window.location.replace("/");

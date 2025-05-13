@@ -45,7 +45,7 @@ def main_game():
     return render_template("./game/acid_game.html")
 
 @app.route('/testgame')
-def main_game():
+def test_game():
     return render_template("./game/acid_game.html")
 
 if __name__ == '__main__':

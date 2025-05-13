@@ -53,7 +53,7 @@ class ActiveWord {
         // 가로 위치 랜덤 설정 (게임 영역 너비 안에서)
         const gameAreaWidth = gameArea.clientWidth;
         // 단어 너비를 고려하여 최대 left 값 계산 (대략적으로)
-        const maxLeft = gameAreaWidth - (word.length * 15); // 글자 크기에 따라 조절 필요
+        const maxLeft = gameAreaWidth - (word.length * 20); // 글자 크기에 따라 조절 필요
         wordElement.style.left = `${Math.max(0, Math.random() * maxLeft)}px`;
         wordElement.style.top = `0px`; // 항상 위에서 시작
 
@@ -160,6 +160,7 @@ function shuffle(array) {
 async function requestWords(){
     const res = await GameHelper.getWords("kr", 20);
     return res.result ?? [];
+    // return [{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "짧", "type": "normal"}];
 }
 
 // 셔플 함수

@@ -10,6 +10,17 @@ const startButton = document.getElementById('start-button');
 const restartButton = document.getElementById('restart-button');
 const finalScoreDisplay = document.getElementById('final-score');
 
+//음악
+const sounds = {
+    "bgm": new Audio("static/asset/music/bgm.mp3"),
+    "hitPath" : "static/asset/music/hit2.m4a",
+    "failPath": "static/asset/music/fail.m4a",
+    "gameOver": new Audio("static/asset/music/game_over.mp3"),
+    "crashPath": "static/asset/music/crash.m4a"
+}
+sounds["bgm"].loop = true;
+sounds["bgm"].volume = 0.3
+
 // 게임 설정 및 상태 변수
 const wordList = []; 
 let gameScore = 0;
@@ -100,6 +111,7 @@ class ActiveWord {
         // 바닥 충돌 감지
         if (this.getTop() + this.wordElement.offsetHeight >= gameArea.clientHeight) {
             this.removeWord(false); // false: 바닥 충돌
+            new Audio(sounds["crashPath"]).play();
             return true;
         }
         return false;
@@ -174,8 +186,9 @@ function initGame(initScore = 0, initLives = 3) {
 // 게임 시작 함수
 function startGame(initLives = 3) {
     // 단어 서버에서 받아오기
+    wordList.length=0;
     updateWordList();
-    console.log(wordList);
+    // console.log(wordList);
 
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
@@ -194,20 +207,26 @@ function startGame(initLives = 3) {
     wordGenerationInterval = setInterval(generateWord, generationRate);
     // 일정 간격으로 단어 이동 및 충돌 감지 시작
     gameInterval = setInterval(updateGame, updateRate);
+    sounds["gameOver"].pause();
+    sounds["gameOver"].currentTime = 0;
+    sounds["bgm"].play();
 }
 
 // 게임 오버 함수
 function gameOver() {
+    sounds["bgm"].pause();
+    sounds["bgm"].currentTime = 0;
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
     finalScoreDisplay.textContent = gameScore;
     gameOverScreen.style.display = 'flex'; // 게임 오버 화면 표시
+    sounds["gameOver"].play()
 }
 
 // 단어 생성 함수 -> 서버에서 보내주면 셔플
 function generateWord() {
-    console.log("generate word");
+    // console.log("generate word");
     const newWord = new ActiveWord(wordList[index].word,wordList[index].type,2+difficalty * speedConst);
     index++;
     activeWords.push(newWord);
@@ -241,15 +260,24 @@ function updateGame() {
 
 // 입력 처리 함수
 function checkInput(e) {
+    console.log("check");
     if(e.key === "Enter" && this === document.activeElement){
+        console.log("Enter");
         const typedWord = this.value.trim();
         wordInput.value = ''; // 입력 필드 초기화
         if (!typedWord) return; // 빈 입력 무시
+
         const index = activeWords.findIndex(word => word.getWord() === typedWord);
         if (index !== -1) {
             // 맞는게 있을 때
             activeWords[index].removeWord(true);
             activeWords.splice(index,1);
+            hit = new Audio(sounds["hitPath"]).play();
+            console.log("hit");
+        }
+        else{
+            fail = new Audio(sounds["failPath"]).play();
+            console.log("fail");
         }
     }
     
@@ -258,7 +286,7 @@ function checkInput(e) {
 // 이벤트 리스너 설정
 startButton.addEventListener('click', () => startGame(3));
 restartButton.addEventListener('click', () => startGame(3)); // 다시 시작 버튼도 startGame 호출
-wordInput.addEventListener('keydown', checkInput); // 입력할 때마다 체크
+wordInput.addEventListener('keypress', checkInput); // 입력할 때마다 체크
 
 // 페이지 로드 시 초기화
 initGame(0,3);

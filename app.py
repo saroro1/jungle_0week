@@ -49,5 +49,9 @@ def main_game():
 def test_game():
     return render_template("./game/acid_game.html")
 
+@app.route('/testranking')
+def test_rank():
+    return render_template("./game/ranking.html")
+
 if __name__ == '__main__':
     app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=5000 if os.environ.get('IS_DEBUG') else 9001)

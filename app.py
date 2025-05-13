@@ -40,4 +40,4 @@ def main_game():
 
 
 if __name__ == '__main__':
-    app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=9001 if os.environ.get('IS_DEBUG') else 5000)
+    app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=5000 if os.environ.get('IS_DEBUG') else 9001)

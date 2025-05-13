@@ -1,3 +1,3 @@
-from .rank_dto import RankingDto
+from .user_entity import UserEntity
 
-__all__ = [RankingDto]
+__all__ = [UserEntity]

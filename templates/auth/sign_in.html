@@ -109,7 +109,7 @@
                 alert(res.error)
             }
             else{
-                alert("로그인 성공")
+                window.location.replace("{{ url_for('page_main') }}");
             }
         })
     </script>

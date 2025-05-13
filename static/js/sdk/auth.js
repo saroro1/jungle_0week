@@ -83,4 +83,44 @@ class AuthHelper{
           return { data: { id: data.data.id, nickname: data.data.nickname } };
         }
 
+    /**
+     * 사용자 정보를 수정합니다. 닉네임 또는 비밀번호를 변경할 수 있습니다.
+     * @async
+     * @static
+     * @param {Object} options - 수정할 정보
+     * @param {string} [options.nickname] - 새 닉네임 (선택 사항)
+     * @param {string} [options.password] - 새 비밀번호 (선택 사항)
+     * @returns {Promise<
+     *   | { result: string }
+     *   | { error: string }
+     * >} 수정 성공 시 result 반환, 실패 시 서버에서 받은 error 메시지 반환
+     * - 성공: `{ result: "ok" }`
+     * - 실패: `{ error: string }` (서버 응답의 error 필드 사용)
+     */
+    static async modify_user({ nickname, password }) {
+        const body = {};
+        if (nickname !== undefined) body.nickname = nickname;
+        if (password !== undefined) body.password = password;
+
+        // 변경할 정보가 nickname 또는 password 둘 중 하나라도 있어야 요청을 보냅니다.
+        if (Object.keys(body).length === 0) {
+            return { error: "변경할 정보가 없습니다." };
+        }
+
+        const response = await fetch("/api/auth/modify", {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { error: data.error || "정보 수정에 실패했습니다." };
+        }
+        return { result: data.result };
+    }
+
 }

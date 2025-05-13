@@ -53,7 +53,7 @@ class ActiveWord {
         // 가로 위치 랜덤 설정 (게임 영역 너비 안에서)
         const gameAreaWidth = gameArea.clientWidth;
         // 단어 너비를 고려하여 최대 left 값 계산 (대략적으로)
-        const maxLeft = gameAreaWidth - (word.length * 20); // 글자 크기에 따라 조절 필요
+        const maxLeft = gameAreaWidth - (word.length * 25); // 글자 크기에 따라 조절 필요
         wordElement.style.left = `${Math.max(0, Math.random() * maxLeft)}px`;
         wordElement.style.top = `0px`; // 항상 위에서 시작
 
@@ -64,6 +64,7 @@ class ActiveWord {
         gameArea.appendChild(wordElement);
 
         this.wordElement = wordElement;
+        this.setColor(type);
     }
 
     getScore(txt, type) {
@@ -71,6 +72,19 @@ class ActiveWord {
         switch(type){
             default:
                 return Math.round(this.baseScore * Math.pow(this.multiplier, exponent)) + difficalty * 100;
+        }
+    }
+
+    setColor(type) {
+        switch(type){
+            case "normal":
+                this.wordElement.style.color = 'black';
+                break
+            case "heal":
+                this.wordElement.style.color = 'cyan';
+                break
+            default:
+                {}
         }
     }
 
@@ -132,6 +146,10 @@ class ActiveWord {
         } else { // 단어를 맞췄을 경우
             scoreDisplay.textContent = gameScore + this.score;
             gameScore += this.score;
+            if(this.type == "heal"){
+                lives += lives<5? 1 : 0;
+                livesDisplay.textContent = lives;
+            }
         }
     }
 }
@@ -227,7 +245,6 @@ function gameOver() {
 
 // 단어 생성 함수 -> 서버에서 보내주면 셔플
 function generateWord() {
-    // console.log("generate word");
     const newWord = new ActiveWord(wordList[index].word,wordList[index].type,2+difficalty * speedConst);
     index++;
     activeWords.push(newWord);
@@ -273,12 +290,12 @@ function checkInput(e) {
             // 맞는게 있을 때
             activeWords[index].removeWord(true);
             activeWords.splice(index,1);
-            hit = new Audio(sounds["hitPath"]).play();
-            console.log("hit");
+            new Audio(sounds["hitPath"]).play();
+            // console.log("hit");
         }
         else{
-            fail = new Audio(sounds["failPath"]).play();
-            console.log("fail");
+            new Audio(sounds["failPath"]).play();
+            // console.log("fail");
         }
     }
     

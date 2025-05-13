@@ -14,7 +14,7 @@ body {
     border: 1px solid #ccc;
     background-color: #fff;
     position: relative; /* 내부 요소 absolute positioning 기준 */
-    width: 100%; /* 예시 크기 */
+    width: 90%; /* 예시 크기 */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 

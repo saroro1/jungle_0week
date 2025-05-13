@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: black;
     margin: 0;
     font-family: sans-serif;
 }
@@ -14,16 +14,21 @@ body {
     border: 1px solid #ccc;
     background-color: #fff;
     position: relative; /* 내부 요소 absolute positioning 기준 */
-    width: 1000px; /* 예시 크기 */
+    width: 100%; /* 예시 크기 */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 #info-panel {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    background: linear-gradient(to bottom, #3a9dfb, #1c64d1);
+    color: white;
+    padding: 10px 12px;
     display: flex;
-    justify-content: space-around;
+    align-items: center;
     font-weight: bold;
+    font-size: 25px;
+    font-family: "Ycomputer-Regular";
+
+    justify-content: space-around;
 }
 
 #game-area {

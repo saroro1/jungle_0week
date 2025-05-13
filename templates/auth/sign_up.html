@@ -122,6 +122,7 @@
           const formDiv = document.getElementById("sign_in_form")
           const formData = new FormData(formDiv);
           if (formData.get("password_confirm") !== formData.get("password")) {
+              e.preventDefault();
             alert("비밀번호랑 비밀번호 확인 값이 다릅니다.");
             return;
           }

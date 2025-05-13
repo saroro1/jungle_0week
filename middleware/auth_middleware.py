@@ -38,4 +38,4 @@ def _handle_auth_fail(use_redirect: bool):
 
 
 def redirect_to_login():
-    return redirect(url_for("sign_in_page"))
+    return redirect(url_for("auth.page_sign_in"))

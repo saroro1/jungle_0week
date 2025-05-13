@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/font.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      body {
+      background-image: url("../static/imgs/Main_Background.png");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      }
+
+      .title {
+      font-family: "Ycomputer-Regular";
+      font-size: 110px;
+      color: white;
+      text-align: center;
+      margin-top: 20%;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+      font-weight: bold;
+      }
+    </style>
+  </head>
+  <body
+    class="h-screen flex flex-col items-center justify-center relative text-white"
+  >
+    <div class="absolute top-6 right-6">
+      <a
+      href="{{ url_for('mypage') }}"
+      class="text-black underline text-lg hover:text-gray-700"
+      style="font-family: 'Ycomputer-Regular';"
+      >
+      마이페이지
+      </a>
+    </div>
+    <div>
+      <h1 class="title">산성비</h1>
+    </div>
+    <div class="mt-12"></div>
+      <a
+      href="{{ url_for('play') }}"
+      class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
+      style="font-family: 'Ycomputer-Regular'; text-decoration: none;"
+      >
+      시작하기
+      </a>
+    </div>
+
+    <div class="flex flex-row items-center justify-center space-x-12 mt-10">
+      
+      <a
+            href="{{ url_for('ranking') }}"
+      class="text-white text-xl underline hover:text-gray-700"
+      style="font-family: 'Ycomputer-Regular'"
+      >
+      랭킹보러가기
+      </a>
+
+      <div class="relative">
+      <button
+        id="modeSelectButton"
+        class="text-white text-xl underline hover:text-gray-700 "
+        onclick="toggleOptions()"
+        style="font-family: 'Ycomputer-Regular';"
+      >
+        모드선택
+      </button>
+      <select
+        id="modeSelectDropdown"
+        class="absolute top-10 right-0 bg-white text-black rounded-md p-2 hidden"
+        style="font-family: 'Pretendard-Regular';"
+        oninput="applySelection()"
+      >
+        <option value="모드선택" disabled selected>모드선택</option>
+        <option value="한글">한글</option>
+        <option value="영어">영어</option>
+        <option value="복합">복합</option>
+      </select>
+      </div>
+      <script>
+      function toggleOptions() {
+        const selectBox = document.getElementById("modeSelectDropdown");
+        selectBox.classList.toggle("hidden");
+      }
+
+      function applySelection() {
+        const selectBox = document.getElementById("modeSelectDropdown");
+        const button = document.getElementById("modeSelectButton");
+        
+        button.textContent = selectBox.value;
+        selectBox.classList.add("hidden");
+      }
+      </script>
+    </div>
+  </body>
+</html>

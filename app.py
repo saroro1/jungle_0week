@@ -2,6 +2,7 @@ from flask import Flask
 
 import main_router
 from constant import DBContainer
+from flask import render_template
 
 app = Flask(__name__, static_url_path='/static')
 from pymongo import MongoClient
@@ -32,4 +33,6 @@ def post_acid_ranking():
 
 
 if __name__ == '__main__':
-    app.run()
+     app.run()
+
+

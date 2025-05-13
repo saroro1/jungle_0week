@@ -1,4 +1,4 @@
-import {GameHelper} from "./game.js";
+import {GameHelper} from "./sdk/game.js";
 
 const gameArea = document.getElementById('game-area');
 const wordInput = document.getElementById('word-input');

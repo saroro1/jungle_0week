@@ -28,7 +28,11 @@ class Jwt:
 
     @staticmethod
     def decode(text: str) -> IUserJwt:
-        return decode(text)
+        return decode(
+                text,
+                os.environ.get('JWT_SECRET'),
+                algorithms="HS256"
+            )
 
     @staticmethod
     def is_valid(text: str) -> bool:
@@ -36,7 +40,7 @@ class Jwt:
             decode(
                 text,
                 os.environ.get('JWT_SECRET'),
-                algorithms=["HS256"]
+                algorithms="HS256"
             )
             return True
         except (ExpiredSignatureError, InvalidTokenError):

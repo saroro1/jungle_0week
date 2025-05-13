@@ -1,4 +1,5 @@
 @import url('font.css');
+@import url('xp_style.css');
 
 body {
     display: flex;
@@ -10,12 +11,19 @@ body {
     font-family: sans-serif;
 }
 
+.close-btn{
+    position: absolute ;
+    left: 95%
+}
+
 #game-container {
-    border: 1px solid #ccc;
-    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.6);
+    background-color: #ece9d8;
+    overflow: hidden;
+    border: 2px solid #0078d7;
     position: relative; /* 내부 요소 absolute positioning 기준 */
     width: 90%; /* 예시 크기 */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 #info-panel {
@@ -59,10 +67,15 @@ body {
     width: calc(100% - 22px); /* padding 고려 */
     padding: 10px;
     margin: 10px;
-    border: 1px solid #ccc;
     box-sizing: border-box; /* padding 포함하여 width 계산 */
     font-size: 1.1em;
     text-align: center;
+
+    border: 1px solid black;
+    border-radius: 12px;
+    box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.6);
+    background-color: #ece9d8;
+    overflow: hidden;
 }
 
 /* 오버레이 공통 스타일 */

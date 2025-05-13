@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 import main_router
 from constant import DBContainer
@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 app.register_blueprint(main_router.html.auth_route)
 app.register_blueprint(main_router.api.auth_api_router)
+app.register_blueprint(main_router.api.game_api_router)
 client = MongoClient('localhost', 27017)
 db = client['acid_rain']
 ranking_db = db['ranking']
@@ -31,6 +32,9 @@ def post_acid_ranking():
     pass
 
 @app.route('/game')
+def main_game():
+    return render_template("./game/acid_game.html")
+
 
 
 if __name__ == '__main__':

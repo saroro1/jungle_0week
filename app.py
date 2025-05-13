@@ -20,7 +20,7 @@ app.register_blueprint(main_router.api.game_api_router)
 client = MongoClient('localhost', 27017)
 db = client['acid_rain']
 user_db = db["user_db"]
-for i in range(word_type):
+for i in word_type:
     try:
         user_db.create_index([(f"high_score.{i}", DESCENDING)])
     except Exception as e:

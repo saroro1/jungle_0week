@@ -9,21 +9,24 @@ def auth_middleware(use_redirect: bool = False):
     def decorator(f: Callable):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            token = None
+
             auth_header = request.headers.get('Authorization')
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
 
-            if not auth_header or not auth_header.startswith("Bearer "):
-                return _handle_auth_fail(use_redirect)
+            if not token:
+                token = request.cookies.get('auth_token')
 
-            token = auth_header.split(" ")[1]
-
-            if not Jwt.is_valid(token):
+            if not token or not Jwt.is_valid(token):
                 return _handle_auth_fail(use_redirect)
 
             try:
                 user_data = Jwt.decode(token)
                 g.current_user = user_data  # 예: {"id": "user123"}
             except Exception as e:
-                return _handle_auth_fail(e)
+                print(e)
+                return _handle_auth_fail(use_redirect)
 
             return f(*args, **kwargs)
         return wrapper

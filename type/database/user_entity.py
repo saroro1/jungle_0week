@@ -20,9 +20,9 @@ class HighScoreDict(TypedDict):
 class UserEntity:
     id: str
     nickname: str
-    password: str
     created_at: datetime
     high_score: HighScoreDict
+    password: Optional[str] = None
     _id: ObjectId = field(default_factory=ObjectId)
     ranking: Optional[int] = None
 
@@ -31,10 +31,11 @@ class UserEntity:
             "_id": str(self._id),
             "id": self.id,
             "nickname": self.nickname,
-            "password": self.password,
             "created_at": self.created_at.isoformat(),
             "high_score": self.high_score,
         }
+        if self.password is not None:
+            data["password"] = self.password
         if self.ranking is not None:
             data["ranking"] = self.ranking
         return data
@@ -45,7 +46,7 @@ class UserEntity:
             _id=data["_id"],
             id=data["id"],
             nickname=data["nickname"],
-            password=data["password"],
+            password=data.get("password"),
             created_at=data["created_at"],
             high_score=data["high_score"],
             ranking=data.get("ranking"),
@@ -89,7 +90,7 @@ class UserEntity:
     @classmethod
     def getLeaderBoard(cls, type: str, page: int, count: int) -> List['UserEntity']:
         if type not in word_type:
-            raise ValueError("Invalid type. Must be 'kr' or 'en'.")
+            raise ValueError(f"Invalid type: {type}. Must be one of {word_type}.")
         collection: Collection = DBContainer.user_db
 
         skip = (page - 1) * count
@@ -97,16 +98,20 @@ class UserEntity:
 
         pipeline = [
             {
+                "$match": { 
+                    f"high_score.{type}": {"$gt": 0}
+                }
+            },
+            {
                 "$project": {
                     "_id": 1,
                     "id": 1,
                     "nickname": 1,
                     "high_score": 1,
                     "created_at": 1,
-                    "score": f"$high_score.{type}"
                 }
             },
-            {"$sort": {"score": -1}},
+            {"$sort": {f"high_score.{type}": -1}},
             {"$skip": skip},
             {"$limit": limit}
         ]
@@ -119,6 +124,14 @@ class UserEntity:
             user.ranking = skip + index + 1
 
         return leaderboard
+
+    @classmethod
+    def countLeaderBoardUsers(cls, type_word: str) -> int:
+        if type_word not in word_type:
+            raise ValueError(f"Invalid type_word: {type_word}. Must be one of {word_type}.")
+        collection: Collection = DBContainer.user_db
+        query = {f"high_score.{type_word}": {"$gt": 0}}
+        return collection.count_documents(query)
 
     @classmethod
     def setHighScore(cls, user_id: str, score_type: str, score: int) -> Optional[UpdateResult]:

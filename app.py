@@ -14,6 +14,7 @@ from constant import DBContainer, word_type
 app = Flask(__name__, static_url_path='/static')
 from pymongo import MongoClient, DESCENDING
 
+app.register_blueprint(main_router.html.game_route)
 app.register_blueprint(main_router.html.auth_route)
 app.register_blueprint(main_router.api.auth_api_router)
 app.register_blueprint(main_router.api.game_api_router)
@@ -62,4 +63,5 @@ def test_rank():
 
 
 if __name__ == '__main__':
+    print(os.environ.get("IS_DEBUG"))
     app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=5000 if os.environ.get('IS_DEBUG') else 9001)

@@ -3,64 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HoparkWin Start Menu</title>
-    <link rel="stylesheet" href="static/css/ranking.css">
+    <title>
+        {% if current_type == 'kr' %}한글
+        {% elif current_type == 'en' %}영어
+        {% elif current_type == 'complex' %}혼합
+        {% else %}{{ current_type.upper() }}{% endif %} 랭킹 - Jungle Typing Game
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ranking.css') }}">
 </head>
 <body>
     <div class="start-menu">
         <header class="menu-header">
-            <img src="static/asset/img/profile.png" alt="User" class="user-icon">
-            <span class="user-name">랭킹</span>
+            <img src="{{ url_for('static', filename='asset/img/profile.png') }}" alt="User" class="user-icon">
+            <span class="user-name">
+                랭킹 - 
+                {% if current_type == 'kr' %}한글
+                {% elif current_type == 'en' %}영어
+                {% elif current_type == 'complex' %}혼합
+                {% else %}{{ current_type.upper() }}{% endif %}
+            </span>
         </header>
         <main class="menu-content">
             <div class="left-panel">
                 <ul>
-                    <li>
-                        <img src="static/asset/img/first.png" alt="Icon" class="item-icon">
-                        <div class="item-text">
-                            <span class="item-title">1등</span>
-                            <span class="item-subtitle">돌잡이 키보드</span>
-                        </div>
-                    </li>
-                    <li>
-                        <img src="static/asset/img/second.jpeg" alt="Icon" class="item-icon">
-                        <div class="item-text">
-                            <span class="item-title">2등</span>
-                            <span class="item-subtitle">82세 김똘이 할아버지의 마지막 독수리 타법 </span>
-                        </div>
-                    </li>
-                    <li>
-                        <img src="static/asset/img/third.jpeg" alt="Icon" class="item-icon">
-                        <div class="item-text">
-                            <span class="item-title">3등</span>
-                            <span class="item-subtitle">튤립반 타자왕</span>
-                        </div>
-                    </li>
+                    {% for i in range(3) %}
+                        {% set player = data.top_player[i] if i < data.top_player|length else none %}
+                        {% set rank_num_str = ['first', 'second', 'third'][i] %}
+                        <li>
+                            <img src="{{ url_for('static', filename='asset/img/' + rank_num_str + ('.png' if rank_num_str == 'first' else '.jpeg')) }}" alt="{{ i+1 }}등" class="item-icon">
+                            <div class="item-text">
+                                <span class="item-title">{{ i+1 }}등</span>
+                                <span class="item-subtitle">{{ player.nickname if player else '-' }} ({{ player.score if player and player.score is not none else '-' }}점)</span>
+                            </div>
+                        </li>
+                    {% endfor %}
                     <li class="separator"></li>
-                    <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">텍스트 편집기</span>
-                    </li>
-                    <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">이미지 뷰어</span>
-                    </li>
-                    <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">미디어 플레이어</span>
-                    </li>
-                    <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">메신저 프로그램</span>
-                    </li>
-                    <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">시스템 둘러보기</span>
-                    </li>
-                     <li>
-                        <span class="item-ranking-number">n등</span>
-                        <span class="item-subtitle">파일 및 설정 마법사</span>
-                    </li>
+                    {% if data.ranking %}
+                        {% for item in data.ranking %}
+                            <li>
+                                <span class="item-ranking-number">{{ item.ranking }}등</span>
+                                <span class="item-subtitle">{{ item.nickname }} ({{ item.score if item.score is not none else '-' }}점)</span>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li>
+                            <span class="item-subtitle" style="text-align: center; width: 100%;">랭킹 정보가 없습니다.</span>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="right-panel">
@@ -70,16 +59,16 @@
                             모드 선택
                         </span>
                     </li>
-                    <li>
-                        <img src="placeholder-folder-icon.png" alt="Folder Icon" class="item-icon-right">
-                        <span class="item-title-right">한글</span>
+                    <li data-lang="kr" class="{{ 'active' if current_type == 'kr' else '' }} change_btn">
+                            <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
+                            <span class="item-title-right">한글</span>
                     </li>
-                    <li>
-                        <img src="placeholder-folder-icon.png" alt="Folder Icon" class="item-icon-right">
+                    <li data-lang="en" class="{{ 'active' if current_type == 'en' else '' }} change_btn">
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
                         <span class="item-title-right">영어</span>
                     </li>
-                    <li>
-                        <img src="placeholder-folder-icon.png" alt="Folder Icon" class="item-icon-right">
+                    <li data-lang="complex" class="{{ 'active' if current_type == 'complex' else '' }} change_btn">
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
                         <span class="item-title-right">복합</span>
                     </li>
 
@@ -88,31 +77,61 @@
                 <ul>
                     <li class = "no-hover">
                         <span class = "item-title no-hover">
-                            내 최고 등수
+                            내 최고 등수 (
+                                {%- if current_type == 'kr' %}한글
+                                {%- elif current_type == 'en' %}영어
+                                {%- elif current_type == 'complex' %}혼합
+                                {%- else %}{{ current_type.upper() }}{% endif -%}
+                            )
                         </span>
                     </li>
                     <li>
                         <span class="item-ranking-number">
-                            내 닉네임
+                            {{ data.my_nickname if data.my_nickname else '-' }}
                         </span>
-                        <span class="item-title-right">n 등</span>
+                        <span class="item-title-right">{{ data.my_ranking if data.my_ranking != -1 and data.my_ranking is not none else '-' }} 등 ({{ data.my_score if data.my_score is not none else '-' }}점)</span>
                     </li>
                 </ul>
             </div>
         </main>
         <footer class="menu-footer">
-            <div class="all-programs">
-                <span class="arrow-icon">◀</span> 이전 페이지
+            <div class="all-programs {% if page <= 1 %}disabled{% endif %}">
+                {% if page > 1 %}
+                    <a href="{{ url_for('game.ranking', type_word=current_type, page=page-1) }}">
+                        <span class="arrow-icon">◀</span> 이전 페이지
+                    </a>
+                {% else %}
+                    <span class="arrow-icon">◀</span> 이전 페이지
+                {% endif %}
             </div>
-            <div class="all-programs">
-                다음 페이지 <span class="arrow-icon">▶</span>
+            <div class="all-programs {% if page >= total_pages %}disabled{% endif %}">
+                {% if page < total_pages %}
+                    <a href="{{ url_for('game.ranking', type_word=current_type, page=page+1) }}">
+                        다음 페이지 <span class="arrow-icon">▶</span>
+                    </a>
+                {% else %}
+                    다음 페이지 <span class="arrow-icon">▶</span>
+                {% endif %}
             </div>
             <div class = "padding-right-footer">
                 <button class="turn-off">
-                    메인으로
+                    <a href="{{ url_for('page_main') }}">
+                        메인으로
+                    </a>
                 </button>
             </div>
         </footer>
     </div>
 </body>
+<script>
+      document.addEventListener('DOMContentLoaded', () => {
+      const baseUrl = "{{ url_for('game.ranking', type_word='__TYPE__', page=page) }}";
+      document.querySelectorAll('.change_btn').forEach(el => {
+        el.addEventListener('click', () => {
+          const lang = el.getAttribute('data-lang');
+          window.location.href = baseUrl.replace('__TYPE__', lang);
+        });
+      });
+    });
+</script>
 </html>

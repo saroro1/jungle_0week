@@ -112,6 +112,53 @@ body {
 #game-over-screen p {
     font-size: 1.1em;
 }
+.game-over-content-area {
+    padding: 15px;
+    background-color: #ECE9D8; /* XP 대화상자 배경색 */
+    border-bottom: 1px solid #ACA899; /* 하단 구분선 */
+    color: black;
+}
+
+.game-over-title {
+    font-family: 'Ycomputer-Regular';
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.game-over-button-area {
+    padding: 10px 15px;
+    text-align: right;
+    background-color: #ECE9D8; /* XP 대화상자 배경색 */
+}
+
+.alert-button {
+    min-width: 80px;
+    padding: 4px 12px;
+    margin-left: 6px;
+    font-family: "굴림", Gulim, Tahoma, sans-serif;
+    font-size: 9pt;
+    color: #000000;
+    background-color: #F0F0F0;
+    border: 1px solid #000000; /* 기본 검정 테두리 */
+    border-top-color: #FFFFFF; /* 밝은 상단 */
+    border-left-color: #FFFFFF; /* 밝은 왼쪽 */
+    border-right-color: #707070; /* 어두운 오른쪽 */
+    border-bottom-color: #707070; /* 어두운 하단 */
+    cursor: pointer;
+    outline: none; /* 포커스 시 기본 아웃라인 제거 */
+}
+
+.alert-button:hover {
+    border-color: #0078D7; /* 호버 시 파란색 테두리 (XP 스타일) */
+}
+
+.alert-button:active {
+    background-color: #E0E0E0;
+    border-top-color: #707070;
+    border-left-color: #707070;
+    border-bottom-color: #FFFFFF;
+    border-right-color: #FFFFFF;
+}
 
 /* 게임 시작 시 숨길 요소
 #game-container > *:not(#start-screen):not(#game-over-screen) {

@@ -7,9 +7,12 @@ const livesDisplay = document.getElementById('lives');
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
 const startButton = document.getElementById('start-button');
-const restartButton = document.getElementById('restart-button');
 const finalScoreDisplay = document.getElementById('final-score');
+const userNickName = document.getElementById('user-nickname');
 
+const goToMainButton = document.getElementById('main-page-button');
+const restartButton = document.getElementById('restart-button');
+const goToRankButton = document.getElementById('ranking-button');
 //음악
 const sounds = {
     "bgm": new Audio("static/asset/music/bgm.mp3"),
@@ -243,13 +246,17 @@ function gameOver() {
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
     finalScoreDisplay.textContent = gameScore;
+
+    //TODO : user닉네임 추가
+    userNickName.textContent = '닉네임';
+
     gameOverScreen.style.display = 'flex'; // 게임 오버 화면 표시
     sounds["gameOver"].play()
 }
 
 // 단어 생성 함수 -> 서버에서 보내주면 셔플
 function generateWord() {
-    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,2+difficalty * speedConst);
+    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,20+difficalty * speedConst);
     index++;
     activeWords.push(newWord);
 
@@ -308,6 +315,12 @@ function checkInput(e) {
 // 이벤트 리스너 설정
 startButton.addEventListener('click', () => startGame(3));
 restartButton.addEventListener('click', () => startGame(3)); // 다시 시작 버튼도 startGame 호출
+goToMainButton.addEventListener('click', ()=>{
+    window.location.replace("{{ url_for('page_main') }}");
+});
+goToRankButton.addEventListener('click', ()=>{
+    window.location.href = ("{{ url_for('page_main') }}");
+})
 wordInput.addEventListener('keypress', checkInput); // 입력할 때마다 체크
 
 // 페이지 로드 시 초기화

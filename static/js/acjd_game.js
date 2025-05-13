@@ -86,7 +86,7 @@ class ActiveWord {
             default:
                 {}
         }
-    }
+    } 
 
     setWord(newWord) {
         this.wordElement.textContent = newWord;
@@ -104,7 +104,7 @@ class ActiveWord {
     setLeft(newLeft){
         this.wordElement.style.left = newLeft;
     }
-
+ 
     getTop(){
         return parseInt(this.wordElement.style.top || 0);
     }
@@ -177,6 +177,10 @@ function shuffle(array) {
 // 서버에 단어 요청
 async function requestWords(){
     const res = await GameHelper.getWords("kr", 20);
+    if(res.error){
+        alert("서버에서 단어를 전달 받지 못했습니다.");
+        window.location.href = "/game";
+    }
     return res.result ?? [];
     // return [{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "짧", "type": "normal"}];
 }

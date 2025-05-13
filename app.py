@@ -12,18 +12,24 @@ import main_router
 from constant import DBContainer
 
 app = Flask(__name__, static_url_path='/static')
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 
 app.register_blueprint(main_router.html.auth_route)
 app.register_blueprint(main_router.api.auth_api_router)
 app.register_blueprint(main_router.api.game_api_router)
 client = MongoClient('localhost', 27017)
 db = client['acid_rain']
-ranking_db = db['ranking']
 user_db = db['user']
-DBContainer.user_db = user_db
-DBContainer.ranking_db = ranking_db
+try:
+    user_db.create_index([("high_score.kr", DESCENDING)])
+except Exception as e:
+    print("인덱싱 생성 실패")
 
+# high_score.en 필드에 내림차순 인덱스 생성
+try:
+    user_db.create_index([("high_score.en", DESCENDING)])
+except Exception as e:
+    print("인덱싱 생성 실패")
 
 @app.route("/", endpoint="page_main")
 @auth_middleware(use_redirect=True)

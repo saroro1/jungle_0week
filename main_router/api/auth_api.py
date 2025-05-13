@@ -6,6 +6,7 @@ from flask import request, Blueprint, jsonify, Response, url_for
 
 from constant import DBContainer
 from type.req import LoginReq, SignUpReq
+from utils import Jwt
 
 auth_api_router = Blueprint("auth_api", __name__, url_prefix="/api/auth")
 
@@ -20,6 +21,9 @@ def check_duplicate(id: str):
         pass
 
 
+from flask import make_response
+
+
 @auth_api_router.route("/sign_in", methods=["POST"])
 def sign_in():
     try:
@@ -29,16 +33,25 @@ def sign_in():
         user = DBContainer.user_db.find_one({"id": login_req.id})
         if not user:
             return jsonify({"error": "아이디나 비밀번호가 틀렸습니다."}), 401
-        stored_hashed_pw = user.get("password")  # 이미 해싱된 비밀번호
+        stored_hashed_pw = user.get("password")
         if not bcrypt.checkpw(login_req.password.encode('utf-8'), stored_hashed_pw.encode('utf-8')):
             return jsonify({"error": "아이디나 비밀번호가 틀렸습니다."}), 401
-        access_token = jwt.encode({"id": user.get("id")}, os.environ.get('JWT_SECRET'), algorithm="HS256")
+        access_token = Jwt.encode(user.get("id"))
 
-        response = jsonify({"result": {
-            "type": "bearer",
-            "access_token": access_token
-        }})
-        response.headers["Authorization"] = f"Bearer {access_token}"
+        response = make_response(jsonify({
+            "result": {
+                "type": "bearer",
+                "access_token": access_token
+            }
+        }))
+
+        response.set_cookie(
+            'auth_token',
+            value=access_token,
+            httponly=True,
+            samesite='Lax'
+        )
+
         return response
     except Exception as e:
         print(e)
@@ -62,7 +75,7 @@ def sign_up():
             return jsonify({"error": "잘못된 요청입니다."}), 400
         DBContainer.user_db.insert_one(sign_up_req.__dict__)
         return jsonify({
-            data: {
+            "data": {
                 "id": sign_up_req.id,
                 "nickname": sign_up_req.nickname
             }

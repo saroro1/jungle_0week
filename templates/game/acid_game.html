@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>산성비 게임 프로토</title>
+    <link rel="stylesheet" href="static/css/acid_game.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="info-panel">
+            <span>점수: <span id="score">0</span></span>
+            <span>목숨: <span id="lives">3</span></span>
+            </div>
+
+        <div id="game-area">
+            </div>
+
+        <input type="text" id="word-input" placeholder="단어를 입력하세요" autocomplete="off">
+
+        <div id="start-screen" class="overlay">
+            <button id="start-button">게임 시작</button>
+        </div>
+        <div id="game-over-screen" class="overlay" style="display: none;">
+            <h2>게임 오버!</h2>
+            <p>최종 점수: <span id="final-score">0</span></p>
+            <button id="restart-button">다시 시작</button>
+        </div>
+    </div>
+
+    <script src="static/js/sdk/acjd_game.js"></script>
+</body>
+</html>

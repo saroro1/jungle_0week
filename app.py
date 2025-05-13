@@ -30,6 +30,8 @@ def get_acid_rain():  # put application's code here
 def post_acid_ranking():
     pass
 
+@app.route('/game')
+
 
 if __name__ == '__main__':
     app.run()

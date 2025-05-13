@@ -2,7 +2,8 @@ from flask import request, g, redirect, url_for, flash, render_template
 from functools import wraps
 from typing import Callable
 
-from utils.jwt import Jwt
+from type.database import UserEntity
+from utils import Jwt
 
 
 def auth_middleware(use_redirect: bool = False):
@@ -23,7 +24,8 @@ def auth_middleware(use_redirect: bool = False):
 
             try:
                 user_data = Jwt.decode(token)
-                g.current_user = user_data  # 예: {"id": "user123"}
+                user_info = UserEntity.findUserById(user_data["id"])
+                g.current_user = user_info
             except Exception as e:
                 print(e)
                 return _handle_auth_fail(use_redirect)

@@ -1,3 +1,5 @@
+@import url('font.css');
+
 body {
     display: flex;
     justify-content: center;
@@ -12,7 +14,7 @@ body {
     border: 1px solid #ccc;
     background-color: #fff;
     position: relative; /* 내부 요소 absolute positioning 기준 */
-    width: 500px; /* 예시 크기 */
+    width: 1000px; /* 예시 크기 */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
@@ -28,18 +30,24 @@ body {
     height: 600px; /* 예시 크기 */
     position: relative;
     overflow: hidden; /* 영역 벗어나는 단어 숨김 */
-    background-color: #e0f7fa; /* 하늘색 배경 */
+    background-image: url("../asset/img/window_background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+
 }
 
 .word {
+    font-family: "Ycomputer-Regular";
     position: absolute;
     top: 0; /* 초기 위치는 상단 */
-    background-color: rgba(0, 0, 0, 0.7); /* 어두운 배경 */
-    color: white;
+    /* background-color: rgba(0, 0, 0, 0.7); 어두운 배경 */
+    color: black;
     padding: 5px 10px;
     border-radius: 5px;
     white-space: nowrap; /* 단어가 줄바꿈되지 않도록 */
-    font-size: 1.2em;
+    font-size: 1.5em;
 }
 
 #word-input {

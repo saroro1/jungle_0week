@@ -2,7 +2,7 @@ import os
 
 import bcrypt
 import jwt
-from flask import request, Blueprint, jsonify
+from flask import request, Blueprint, jsonify, Response, url_for
 
 from constant import DBContainer
 from type.req import LoginReq, SignUpReq
@@ -70,3 +70,5 @@ def sign_up():
     except Exception as e:
         print(e)
         return jsonify({"error": "올바르지 않은 요청입니다"}), 400
+
+

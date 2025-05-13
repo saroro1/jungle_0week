@@ -1,5 +1,11 @@
 import os
 
+from dotenv import load_dotenv
+
+from middleware import auth_middleware
+
+load_dotenv()
+
 from flask import Flask, render_template
 
 import main_router
@@ -34,10 +40,13 @@ def post_acid_ranking():
     pass
 
 @app.route('/game')
+@auth_middleware(use_redirect=True)
 def main_game():
     return render_template("./game/acid_game.html")
 
-
+@app.route('/testgame')
+def test_game():
+    return render_template("./game/acid_game.html")
 
 if __name__ == '__main__':
-    app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=9001 if os.environ.get('IS_DEBUG') else 5000)
+    app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=5000 if os.environ.get('IS_DEBUG') else 9001)

@@ -71,9 +71,4 @@ def sign_up():
         print(e)
         return jsonify({"error": "올바르지 않은 요청입니다"}), 400
 
-@auth_api_router.route("/sign_out")
-def sign_out():
-    res = Response()
-    res.headers["Authorization"] = ""
-    res.headers["Location"] = url_for("")
-    headers["Authorization"] = ""
+

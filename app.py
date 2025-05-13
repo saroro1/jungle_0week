@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template
 
 import main_router
@@ -19,7 +21,7 @@ DBContainer.ranking_db = ranking_db
 
 @app.route("/")
 def asdf():
-    return "asdf"
+    return render_template("./main.html")
 
 
 @app.route('/api/ranking/acid_rain', methods=["GET"])
@@ -38,4 +40,4 @@ def main_game():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True if os.environ.get('IS_DEBUG') else False)

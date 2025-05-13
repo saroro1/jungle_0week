@@ -1,3 +1,5 @@
+import os
+
 import bcrypt
 import jwt
 from flask import request, Blueprint, jsonify
@@ -30,7 +32,7 @@ def sign_in():
         stored_hashed_pw = user.get("password")  # 이미 해싱된 비밀번호
         if not bcrypt.checkpw(login_req.password.encode('utf-8'), stored_hashed_pw.encode('utf-8')):
             return jsonify({"error": "아이디나 비밀번호가 틀렸습니다."}), 401
-        access_token = jwt.encode({"id": user.get("id")}, "asdfasfasfsaf", algorithm="HS256")
+        access_token = jwt.encode({"id": user.get("id")}, os.environ.get('JWT_SECRET'), algorithm="HS256")
 
         response = jsonify({"result": {
             "type": "bearer",

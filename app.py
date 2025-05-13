@@ -25,8 +25,9 @@ DBContainer.user_db = user_db
 DBContainer.ranking_db = ranking_db
 
 
-@app.route("/")
-def asdf():
+@app.route("/", endpoint="page_main")
+@auth_middleware(use_redirect=True)
+def game_main_page():
     return render_template("./main.html")
 
 

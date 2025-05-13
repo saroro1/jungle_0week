@@ -1,4 +1,4 @@
-from flask import request, g, redirect, url_for
+from flask import request, g, redirect, url_for, flash, render_template
 from functools import wraps
 from typing import Callable
 
@@ -41,4 +41,4 @@ def _handle_auth_fail(use_redirect: bool):
 
 
 def redirect_to_login():
-    return redirect(url_for("auth.page_sign_in"))
+    return render_template("./auth/sign_in_error.html")

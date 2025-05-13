@@ -1,5 +1,5 @@
+import {GameHelper} from "./game.js";
 
-// DOM 요소 참조
 const gameArea = document.getElementById('game-area');
 const wordInput = document.getElementById('word-input');
 const scoreDisplay = document.getElementById('score');
@@ -145,24 +145,14 @@ function shuffle(array) {
 }
 
 // 서버에 단어 요청
-function requestWords(){
-    return [
-  { "word": "사과", "type": "normal" },
-  { "word": "바나나", "type": "normal" },
-  { "word": "치료", "type": "heal" },
-  { "word": "회복", "type": "heal" },
-  { "word": "포도", "type": "normal" },
-  { "word": "고양이", "type": "normal" },
-  { "word": "강아지", "type": "normal" },
-  { "word": "치킨", "type": "heal" },
-  { "word": "피자", "type": "normal" },
-  { "word": "오렌지", "type": "normal" }
-]
+async function requestWords(){
+    const res = await GameHelper.getWords("kr", 20);
+    return res.result ?? [];
 }
 
 // 셔플 함수
-function updateWordList(){
-    let newWords = requestWords();
+async function updateWordList(){
+    let newWords = await requestWords();
     newWords = shuffle(newWords);
     wordList.push(...newWords);
 }
@@ -251,7 +241,7 @@ function updateGame() {
 
 // 입력 처리 함수
 function checkInput(e) {
-    if(e.key == "Enter" && this === document.activeElement){
+    if(e.key === "Enter" && this === document.activeElement){
         const typedWord = this.value.trim();
         wordInput.value = ''; // 입력 필드 초기화
         if (!typedWord) return; // 빈 입력 무시

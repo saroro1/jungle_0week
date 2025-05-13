@@ -96,7 +96,7 @@
         }
     })
 
-    document.getElementById("sign_up_btn").addEventListener("click", async (e)=>{
+    document.getElementById("sign_up_btn").addEventListener("click", async function(e){
 
         const formDiv = document.getElementById("sign_in_form")
         const formData = new FormData(formDiv);
@@ -104,6 +104,11 @@
             alert("비밀번호랑 비밀번호 확인 값이 다릅니다.")
             return;
         }
+        if (!this.reportValidity()) {
+              e.preventDefault();
+              return;
+            }
+        e.preventDefault();
         const res = await AuthHelper.sign_up(formData.get("user_id"), formData.get("password"), formData.get("nickname"))
 
         if(res.error){

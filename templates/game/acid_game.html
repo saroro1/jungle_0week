@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>산성비 게임 프로토</title>
-    <link rel="stylesheet" href="static/css/acid_game.css">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/acid_game.css')}}">
 </head>
 <body>
     <div id="game-container">
@@ -40,6 +40,6 @@
         </div>
     </div>
 
-    <script type="module" src="static/js/acjd_game.js"></script>
+    <script type="module" src="{{url_for('static', filename = 'js/acjd_game.js')}}"></script>
 </body>
 </html>

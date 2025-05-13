@@ -182,7 +182,7 @@ async function requestWords(){
     const res = await GameHelper.getWords("kr", 20);
     if(res.error){
         alert("서버에서 단어를 전달 받지 못했습니다.");
-        window.location.href = "/game";
+        window.location.href = "{{ url_for('play') }}";
     }
     return res.result ?? [];
     // return [{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "짧", "type": "normal"}];
@@ -239,9 +239,10 @@ function startGame(initLives = 3) {
 }
 
 // 게임 오버 함수
-function gameOver() {
+function gameOve() {
     sounds["bgm"].pause();
     sounds["bgm"].currentTime = 0;
+    GameHelper.
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
@@ -313,14 +314,14 @@ function checkInput(e) {
 }
 
 // 이벤트 리스너 설정
-startButton.addEventListener('click', () => startGame(3));
+startButton.addEventListener('click', () => startGame(1));
 restartButton.addEventListener('click', () => startGame(3)); // 다시 시작 버튼도 startGame 호출
 goToMainButton.addEventListener('click', ()=>{
-    window.location.replace("{{ url_for('page_main') }}");
+    window.location.replace("/");
 });
 goToRankButton.addEventListener('click', ()=>{
-    window.location.href = ("{{ url_for('page_main') }}");
-})
+    window.location.href = `/game/ranking/kr/${1}`;
+});
 wordInput.addEventListener('keypress', checkInput); // 입력할 때마다 체크
 
 // 페이지 로드 시 초기화

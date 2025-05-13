@@ -46,7 +46,7 @@ class AuthHelper{
                 return { error: data.error };
             }
 
-            localStorage.setItem("_auth_token", data.result.access_token)
+            sessionStorage.setItem("_auth_token", data.result.access_token)
             return { result: data.result };
         }
         /**

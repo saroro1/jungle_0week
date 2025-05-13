@@ -1,5 +1,6 @@
 from random import shuffle
 from typing import TYPE_CHECKING
+import math
 
 from flask import Blueprint, g, jsonify, request
 
@@ -46,10 +47,24 @@ def get_leaderboard(type_word: str, page: int, count: int):
         count = int(count)
         if type_word not in word_type:
             return jsonify({"error": "잘못된 요청입니다"}), 400
+        if page <= 0 or count <= 0:
+            return jsonify({"error": "페이지와 카운트는 0보다 커야합니다."}), 400
 
-        leaderboard = UserEntity.getLeaderBoard(type=type_word, page=page, count=count)
-        result = [{"nickname": user.nickname, "ranking": user.ranking} for user in leaderboard]
-        return jsonify({"result": result})
+        leaderboard_users = UserEntity.getLeaderBoard(type=type_word, page=page, count=count)
+        leaderboard_result = [{"nickname": user.nickname, "ranking": user.ranking} for user in leaderboard_users]
+        
+        total_users_count = UserEntity.countLeaderBoardUsers(type_word=type_word)
+        total_page = math.ceil(total_users_count / count) if count > 0 else 0
+
+        return jsonify({
+            "result": {
+                "ranking": leaderboard_result,
+                "total_count": total_users_count,
+                "total_page": total_page,
+                "page": page,
+                "count": count
+            }
+        })
     except ValueError as ve:
         return jsonify({"error": str(ve)}), 400
     except Exception as e:

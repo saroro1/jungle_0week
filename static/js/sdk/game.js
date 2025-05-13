@@ -40,6 +40,21 @@ export class GameHelper {
   }
 
   /**
+   * @typedef {object} LeaderboardEntry
+   * @property {string} nickname - 사용자 닉네임
+   * @property {number} ranking - 사용자 순위
+   */
+
+  /**
+   * @typedef {object} LeaderboardResponse
+   * @property {Array<LeaderboardEntry>} ranking - 랭킹 목록
+   * @property {number} total_count - 해당 타입의 랭킹에 있는 총 사용자 수
+   * @property {number} total_page - 전체 페이지 수
+   * @property {number} page - 현재 페이지 번호
+   * @property {number} count - 페이지 당 항목 수
+   */
+
+  /**
    * 지정된 타입의 게임 랭킹 목록을 가져옵니다.
    *
    * @async
@@ -48,10 +63,10 @@ export class GameHelper {
    * @param {number} page - 가져올 페이지 번호 (1부터 시작)
    * @param {number} count - 페이지 당 항목 수
    * @returns {Promise<
-   *   | { result: Array<{ nickname: string; ranking: number }> }
+   *   | { result: LeaderboardResponse }
    *   | { error: string }
    * >}
-   * - 성공: `{ result: [{ nickname: string, ranking: number }, ...] }`
+   * - 성공: `{ result: LeaderboardResponse }`
    * - 실패: `{ error: string }` (서버가 반환한 error 메시지)
    */
   static async getLeaderboard(typeWord, page, count) {

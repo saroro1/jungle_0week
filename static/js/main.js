@@ -9,9 +9,8 @@ function closeModeModal() {
 }
 
 function openMultiModal() {
-
   closeModeModal();
-  
+
   document.getElementById("modal_multi").style.display = "block";
 }
 
@@ -20,9 +19,8 @@ function closeMultiModal() {
 }
 
 function openMakeRoomModal() {
-
   closeMultiModal();
-  
+
   document.getElementById("modal_MakeRoom").style.display = "block";
 }
 
@@ -31,21 +29,21 @@ function closeMakeRoomModal() {
 }
 
 function openJoinRoomModal() {
-
   closeMultiModal();
-  
+
   document.getElementById("modal_JoinRoom").style.display = "block";
 }
 
 function closeJoinRoomModal() {
-  document.getElementById("modal_JoinRoom").style.display = "none";
+  window.location.href = "/";
 }
 
 function goToMulti(isHost) {
   const typeDropdwon = document.getElementById("modeSelectDropdown");
-  window.location.href = `/game/multi/${typeDropdwon.value}/${isHost?"host":"guest"}`;
+  window.location.href = `/game/multi/${typeDropdwon.value}/${
+    isHost ? "host" : "guest"
+  }`;
 }
-
 
 function updateStartAndRankingButtons() {
   const selectBox = document.getElementById("modeSelectDropdown");
@@ -67,9 +65,15 @@ function updateStartAndRankingButtons() {
 
 document.addEventListener("DOMContentLoaded", function () {
   // 이벤트 연결
-  document.getElementById("startButton").addEventListener("click", openModeModal);
-  document.getElementById("closeButton").addEventListener("click", closeModeModal);
-  document.getElementById("battlemodeButton").addEventListener("click", openMultiModal);
+  document
+    .getElementById("startButton")
+    .addEventListener("click", openModeModal);
+  document
+    .getElementById("closeButton")
+    .addEventListener("click", closeModeModal);
+  document
+    .getElementById("battlemodeButton")
+    .addEventListener("click", openMultiModal);
 
   // 멀티모드 닫기 버튼은 ID가 중복되지 않게 따로 줘야 함!
   const closeMultiBtn = document.querySelector("#modal_multi .close-btn");
@@ -84,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
   updateStartAndRankingButtons();
 });
 
-singleButton.addEventListener('click',()=>{
+singleButton.addEventListener("click", () => {
   console.log("click");
   const typeDropdwon = document.getElementById("modeSelectDropdown");
   window.location.href = `/game/play/${typeDropdwon.value}`;

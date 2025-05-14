@@ -6,7 +6,7 @@ const modalJoinRoom = document.getElementById('modal_JoinRoom');
 //host modal
 const roomLink = document.getElementById('room-link');
 const copyButton = document.getElementById('copyButton');
-const gameStartButton = document.getElementById();
+const gameStartButton = document.getElementById("");
 
 let isHost = false;
 

@@ -82,29 +82,36 @@ sequenceDiagram
     participant Guest
     participant Server
 
-    Note over Host, Guest: 1. 방 생성 및 참가
-    Host->>Server: create_room (game_type)
+    Note over Host: 1. WebSocket 연결
+    Host->>Server: websocket connect
+    Guest->>Server: websocket connect
+
+    Host->>Server: authenticate
+    alt 인증 성공
+        Server-->>Host: auth_success
+    else 인증 실패
+        Server-->>Host: auth_failed
+    end
+
+      Note over Host, Guest: 2. 방 생성 및 참가
+
+    Host-->>Server: create_room (game_type)
     Server-->>Host: room_created (link)
     Guest->>Server: join_room (link)
     Server-->>Guest: joined_success
+    Server->>Host: opponent_joined 
 
-    Note over Host, Guest: 2. WebSocket 연결
-    Host->>Server: websocket connect
-    Guest->>Server: websocket connect
-    Server-->>Host: connection_confirmed
-    Server-->>Guest: connection_confirmed
-
-    Note over Host: 3. 게임 시작
+    Note over Host, Guest: 3. 게임 시작
     Host->>Server: start_game
-    Server-->>Host: countdown (3, 2, 1)
-    Server-->>Guest: countdown (3, 2, 1)
+    Server-->>Host: game_starting_soon
+    Server-->>Guest: game_starting_soon
 
     loop 게임 진행
-        Server-->>Host: shoot_word(word, uuid, speed)
-        Server-->>Guest: shoot_word(word, uuid, speed)
+        Server-->>Host: shoot_word(GameWord, uuid)
+        Server-->>Guest: shoot_word(GameWord, uuid)
 
         alt 유저가 맞췄을 경우
-            Host->>Server: hit(uuid, current_time)
+            Host->>Server: hit(uuid)
             Server->>Server: validate_hit()
             Server-->>Host: add_score(score)
         else 유저가 놓쳤을 경우

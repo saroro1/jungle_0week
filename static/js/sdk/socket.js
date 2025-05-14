@@ -192,13 +192,6 @@ export class SocketClient {
     this.socket?.on('game_starting_soon', callback);
   }
 
-  /**
-   * 게임이 시작되었을 때 호출될 콜백을 등록합니다.
-   * @param {(data: { room_id: string, initial_difficulty: number, initial_speed: number, initial_word_generation_interval: number, host: UserState, guest: UserState }) => void} callback
-   */
-  onGameStarted(callback) {
-    this.socket?.on('game_started', callback);
-  }
 
   /**
    * 게임 난이도 변경 시 호출될 콜백을 등록합니다.

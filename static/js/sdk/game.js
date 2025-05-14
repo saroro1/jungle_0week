@@ -84,6 +84,13 @@ export class GameHelper {
   }
 
   /**
+   * @typedef {object} HighscoreResponse
+   * @property {boolean} is_highscore - 현재 점수가 최고 기록인지 여부
+   * @property {number} my_ranking - 업데이트 후 사용자의 해당 타입 랭킹 (-1인 경우 랭크되지 않음)
+   * @property {string} word_type - 점수가 기록된 단어 타입 ("kr", "en", "complex")
+   */
+
+  /**
    * 현재 사용자의 최고 점수를 서버에 기록합니다.
    *
    * @async
@@ -91,10 +98,10 @@ export class GameHelper {
    * @param {string} scoreType - 점수 타입 ("en", "kr" 또는 "complex")
    * @param {number} score - 기록할 점수
    * @returns {Promise<
-   *   | { result: string }
+   *   | { result: HighscoreResponse }
    *   | { error: string }
    * >}
-   * - 성공: `{ result: "하이스코어가 업데이트되었습니다." }` 또는 `{"result": "최고 기록이 아니거나 사용자 정보를 찾을 수 없습니다."}`
+   * - 성공: `{ result: HighscoreResponse }`
    * - 실패: `{ error: string }` (서버가 반환한 error 메시지)
    */
   static async setHighscore(scoreType, score) {

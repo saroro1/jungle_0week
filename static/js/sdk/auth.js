@@ -1,4 +1,4 @@
-class AuthHelper{
+export class AuthHelper{
         /**
          * 아이디 중복 체크
          * @async

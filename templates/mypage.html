@@ -72,13 +72,13 @@
             <input type="password" id="password-field" value="" readonly
               class="w-full border p-1 bg-gray-100 focus:bg-white focus:outline-none" />
           </div>
-          <button >
+          <button id="edit-pw">
             <img src="{{url_for('static', filename = '/asset/img/edit_icon.png')}}" class="w-5 h-5" alt="수정" />
           </button>
         </div>
 
         <div class="flex justify-end">
-          <button id="saveButton" disabled onclick="saveChanges()"
+          <button id="saveButton" disabled
             class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 text-xl"
             style="font-family: 'Ycomputer-Regular'">
             저장하기

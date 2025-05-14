@@ -69,15 +69,29 @@ class UserEntity:
         if user_data and 'high_score' in user_data:
             high_score = user_data['high_score']
             try:
-                kr_rank = collection.count_documents(
-                    {"high_score.kr": {"$gt": high_score.get('kr', 0)}}
-                ) + 1
-                en_rank = collection.count_documents(
-                    {"high_score.en": {"$gt": high_score.get('en', 0)}}
-                ) + 1
-                complex_rank = collection.count_documents(
-                    {"high_score.complex": {"$gt": high_score.get('complex', 0)}}
-                ) + 1
+                kr_score = high_score.get('kr', 0)
+                if kr_score > 0:
+                    kr_rank = collection.count_documents(
+                        {"high_score.kr": {"$gt": kr_score}}
+                    ) + 1
+                else:
+                    kr_rank = -1
+
+                en_score = high_score.get('en', 0)
+                if en_score > 0:
+                    en_rank = collection.count_documents(
+                        {"high_score.en": {"$gt": en_score}}
+                    ) + 1
+                else:
+                    en_rank = -1
+
+                complex_score = high_score.get('complex', 0)
+                if complex_score > 0:
+                    complex_rank = collection.count_documents(
+                        {"high_score.complex": {"$gt": complex_score}}
+                    ) + 1
+                else:
+                    complex_rank = -1
 
                 return HighScoreDict(kr=kr_rank, en=en_rank, complex=complex_rank)
 

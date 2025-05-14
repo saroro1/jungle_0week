@@ -62,6 +62,16 @@ class GameRoom: # 제공된 스니펫의 클래스 이름(GameRoom)을 사용 (�
 rooms: dict[str, GameRoom] = {}
 game_users: dict[str, GameUser] = {} # Key: sid, Value: GameUser instance
 
+# --- 헬퍼 함수: 상대방 플레이어 가져오기 ---
+def _get_opponent(room: GameRoom, current_user: GameUser) -> GameUser | None:
+    if not room or not current_user or not room.host_user or not room.user_guest:
+        return None
+    if current_user.user_id == room.host_user.user_id:
+        return room.user_guest
+    if current_user.user_id == room.user_guest.user_id:
+        return room.host_user
+    return None
+
 # --- 헬퍼 함수: 단일 무작위 단어 가져오기 (수정) ---
 def get_single_random_word(game_type: str) -> tuple[str, str] | None:
     source_list = []
@@ -557,13 +567,22 @@ def handle_hit(data):
     if time_diff > MAX_VALID_HIT_DURATION:
         print(f"[Hit-Cheat] User {user.user_id} (sid: {sid}) hit word {hit_word_object.word} with suspicious time: {time_diff:.2f}s in room {target_room.room_id}")
         user.life -= 1
-        # remove_life 이벤트는 사유(reason)를 포함하므로, 클라이언트에서 해당 사유에 따라 메시지를 표시하도록 합니다.
-        # 서버에서 직접 메시지를 번역하여 보내는 대신, reason 키를 사용합니다.
-        emit('remove_life', {
+        # life_change 및 opponents_life_change 이벤트 추가
+        emit('life_change', {
+            'user_id': user.user_id,
             'new_life': user.life,
-            'reason': 'suspicious_hit_time', # 클라이언트가 이 reason을 보고 메시지 처리
-            'removed_for_user_id': user.user_id 
-        }, room=sid) 
+            'life_delta': -1,
+            'reason': 'suspicious_hit_time'
+        }, room=sid)
+        
+        opponent = _get_opponent(target_room, user)
+        if opponent and opponent.sid in game_users:
+            emit('opponents_life_change', {
+                'opponent_user_id': user.user_id, # 생명력이 변경된 유저 (즉, user)
+                'new_life': user.life,
+                'life_delta': -1,
+                'reason': 'suspicious_hit_time_opponent_view' 
+            }, room=opponent.sid)
 
         if user.life <= 0:
             _handle_game_over(target_room, user)
@@ -571,14 +590,43 @@ def handle_hit(data):
 
     # 정상적인 Hit 처리
     print(f"[Hit-Success] User {user.user_id} (sid: {sid}) hit word: {hit_word_object.word} in room {target_room.room_id}")
-    user.score += hit_word_object.score
+    
+    score_delta = hit_word_object.score
+    user.score += score_delta
     user.count += 1
+
+    # score_change 이벤트 발생
+    emit('score_change', {
+        'user_id': user.user_id,
+        'new_score': user.score,
+        'score_delta': score_delta
+    }, room=sid)
+
     is_heal_item = False
+    life_delta = 0
     if hit_word_object.type == "heal":
         if user.life < MAX_LIVES:
             user.life += 1
+            life_delta = 1
             is_heal_item = True
     
+    if life_delta != 0: # 생명력에 변화가 있었을 경우 (힐 아이템)
+        emit('life_change', {
+            'user_id': user.user_id,
+            'new_life': user.life,
+            'life_delta': life_delta,
+            'reason': 'heal_item' if life_delta > 0 else 'unknown_life_change' # heal_item 외 다른 이유 추가 가능
+        }, room=sid)
+
+        opponent = _get_opponent(target_room, user)
+        if opponent and opponent.sid in game_users:
+            emit('opponents_life_change', {
+                'opponent_user_id': user.user_id,
+                'new_life': user.life,
+                'life_delta': life_delta,
+                'reason': 'opponent_heal_item' if life_delta > 0 else 'opponent_unknown_life_change'
+            }, room=opponent.sid)
+
     # 방 전체에 업데이트 알림
     socketio.emit('word_hit_update', {
         'hitter_user_id': user.user_id,
@@ -636,6 +684,24 @@ def handle_miss(data):
     print(f"[Miss-Reported] User {user.user_id} (sid: {sid}) reported miss for word: {missed_word_object.word} (UUID: {word_uuid}) in room {target_room.room_id}")
     
     user.life -= 1
+    life_delta_on_miss = -1
+
+    # life_change 및 opponents_life_change 이벤트 발생
+    emit('life_change', {
+        'user_id': user.user_id,
+        'new_life': user.life,
+        'life_delta': life_delta_on_miss,
+        'reason': 'word_missed'
+    }, room=sid)
+
+    opponent_on_miss = _get_opponent(target_room, user)
+    if opponent_on_miss and opponent_on_miss.sid in game_users:
+        emit('opponents_life_change', {
+            'opponent_user_id': user.user_id, # 생명력이 변경된 유저 (즉, user)
+            'new_life': user.life,
+            'life_delta': life_delta_on_miss,
+            'reason': 'opponent_word_missed'
+        }, room=opponent_on_miss.sid)
 
     socketio.emit('word_miss_update', {
         'missed_by_user_id': user.user_id, 

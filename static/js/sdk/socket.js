@@ -260,15 +260,6 @@ export class SocketClient {
   }
 
   /**
-   * (주로 부정행위 감지 등으로) 생명력이 감소되었을 때 호출될 콜백을 등록합니다.
-   * 이 이벤트는 특정 사용자에게만 전송될 수 있습니다.
-   * @param {(data: { user_id_to_penalize: string, new_life: number, reason: string }) => void} callback
-   */
-  onRemoveLife(callback) {
-    this.socket?.on('remove_life', callback);
-  }
-
-  /**
    * 게임 종료 시 호출될 콜백을 등록합니다.
    * @param {(data: { room_id: string, winner_id: string | null, loser_id: string | null, final_scores: Record<string, number> }) => void} callback
    */
@@ -290,6 +281,30 @@ export class SocketClient {
    */
   onDefeat(callback) {
     this.socket?.on('defeat', callback);
+  }
+
+  /**
+   * 자신의 점수 변경 시 호출될 콜백을 등록합니다.
+   * @param {(data: { user_id: string, new_score: number, score_delta: number }) => void} callback 
+   */
+  onScoreChange(callback) {
+    this.socket?.on('score_change', callback);
+  }
+
+  /**
+   * 자신의 생명력 변경 시 호출될 콜백을 등록합니다.
+   * @param {(data: { user_id: string, new_life: number, life_delta: number, reason: string }) => void} callback 
+   */
+  onLifeChange(callback) {
+    this.socket?.on('life_change', callback);
+  }
+
+  /**
+   * 상대방의 생명력 변경 시 호출될 콜백을 등록합니다.
+   * @param {(data: { opponent_user_id: string, new_life: number, life_delta: number, reason: string }) => void} callback 
+   */
+  onOpponentLifeChange(callback) {
+    this.socket?.on('opponents_life_change', callback);
   }
 
   /**

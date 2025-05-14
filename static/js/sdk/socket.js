@@ -21,7 +21,7 @@ import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 /**
  * Socket.IO 클라이언트 통신을 관리하는 클래스
  */
-const p = new SocketClient();
+
 
 export class SocketClient {
 

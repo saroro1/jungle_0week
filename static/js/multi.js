@@ -6,7 +6,12 @@ const modalJoinRoom = document.getElementById('modal_JoinRoom');
 const modalMakeRoom = document.getElementById('modal_MakeRoom');
 const roomLink = document.getElementById('room-link');
 const copyButton = document.getElementById('copyButton');
-const gameStartButton = document.getElementById();
+const gameStartButton = document.getElementById('MultiStart_Button');
+let roomCreated = false;
+
+//guest modal
+const roomCodeInput = document.getElementById('roomCodeInput');
+const joinRoomButton = document.getElementById('join-Button');
 
 //game
 const gameArea = document.getElementById('game-area');
@@ -361,54 +366,23 @@ restartButton.addEventListener('click', () => startGame(3));
 goToMainButton.addEventListener('click', () => {
     window.location.replace("/");
 });
+
 goToRankButton.addEventListener('click', () => {
     // gameType이 정의되어 있어야 함
     window.location.href = `/game/ranking/${gameType || 'kr'}/${1}`;
 });
+
 wordInput.addEventListener('keypress', checkInput);
 
-//esc 일시정지
-window.addEventListener('keydown', function (e) {
-    if (e.code === 'Escape') {
-        console.log("ESC");
-        pause();
-        alert("일시정지\n확인을 누르면 재개");
-        resume();
-    }
-});
-
-socket.onDefeat((data) => {
-    isWin = false;
-    console.log("you defeat");
-    console.log(data);
-    gameOver();
-})
-
-socket.onWin((data) => {
-    isWin = true;
-    console.log("you win");
-    console.log(data);
-    gameOver();
-})
-
-//소켓 기본 연결
-socket.onLifeChange((data) => {
-    console.log(data.new_life);
-    lives = data.new_life;
-    livesDisplay.textContent = data.new_life;
-})
-
-socket.onShootWord((data) => {
-    console.log(data)
-    const newWord = new ActiveWord(data.word, data.uuid, data.type, data.speed);
-    activeWords.push(newWord);
-})
-
-//TODO opponent life change
-socket.onOpponentLifeChange((data) => {
-    console.log(data.new_life);
-    opponentLivesDisplay.textContent = data.new_life;
-})
+// //esc 일시정지
+// window.addEventListener('keydown', function (e) {
+//     if (e.code === 'Escape') {
+//         console.log("ESC");
+//         pause();
+//         alert("일시정지\n확인을 누르면 재개");
+//         resume();
+//     }
+// });
 
 let isHost = false;
 
@@ -429,50 +403,111 @@ const socket = new SocketClient(window.location.protocol + "//" + window.locatio
 function socketConnect() {
     socket.connect();
     socket.authenticate(sessionStorage.getItem("_auth_token"));
+    //소켓 listen
     socket.onAuthFailed((data) => {
         console.error(data.message);
     });
-}
 
-function makeRoom() {
-    socket.createRoom("kr");
     socket.onRoomFailed((data) => {
         console.error(data.message);
     })
     socket.onRoomCreated((data) => {
-        console.log("roomCreate");
+        console.log(`"roomCreate" ${data.room_id}`);
+        console
         roomLink.textContent = data.room_id;
     })
 
+    //곧 게임 시작
+    socket.onGameStartingSoon((data) => {
+        console.log(data.countdown);
+        console.log(data.message);
+        gameContainer.style.display = 'block';
+        if (isHost) {
+            modalMakeRoom.style.display = 'none';
+        } else {
+            modalJoinRoom.style.display = 'none';
+        }
+        initGame(0, 3);
+        startGame(3);
+    });
+
+    //워드 생성
+    socket.onShootWord((data) => {
+        const newWord = new ActiveWord(data.word, data.uuid, data.type, data.speed);
+        activeWords.push(newWord);
+    });
+
+    //목숨 변경
+    socket.onLifeChange((data) => {
+        console.log(data.new_life);
+        lives = data.new_life;
+        livesDisplay.textContent = data.new_life;
+    })
+
+    //상대 목숨 변경
+    socket.onOpponentLifeChange((data) => {
+        console.log(data.new_life);
+        opponentLivesDisplay.textContent = data.new_life;
+    })
+
+    //승리
+    socket.onWin((data) => {
+        isWin = true;
+        console.log("you win");
+        console.log(data);
+        gameOver();
+    })
+
+    //패배
+    socket.onDefeat((data) => {
+        isWin = false;
+        console.log("you defeat");
+        console.log(data);
+        gameOver();
+    })
+
+    //상대 참여
+    socket.onOpponentJoined((data) => {
+        console.log("상대 참여");
+        gameStartButton.classList.remove("hidden");
+    });
+
+    socket.onJoinedRoom((data) => {
+        console.log(data.game_started);
+    });
+    socket.onJoinedFailed((data) => {
+        console.error(data.message)
+    })
+}
+
+function makeRoom() {
+    socket.createRoom(gameContainer.dataset.gametype);
+}
+
+function joinRoom(link) {
+    socket.joinRoom(link);
 }
 
 copyButton.addEventListener('click', () => {
-    navigator.clipboard.writeText(roomLink.textContent);
+    if (roomCreated) {
+        navigator.clipboard.writeText(roomLink.textContent);
+    } else {
+        makeRoom();
+        copyButton.textContent = "복사하기"
+        roomCreated = true;
+    }
 });
 
 gameStartButton.addEventListener('click', () => {
     socket.sendStartGame();
 })
 
-//소켓 listen
-
-//곧 게임 시작
-socket.onGameStartingSoon((data) => {
-    console.log(data.countdown);
-    console.log(data.message);
-    gameContainer.style.display = 'block';
-    if (isHost) {
-        modalMakeRoom.style.display = 'none';
-    } else {
-        modalJoinRoom.style.display = 'none';
-    }
-    initGame(0, 3);
-    startGame(3);
-});
+joinRoomButton.addEventListener('click', () => {
+    const link = roomCodeInput.value;
+    joinRoom(link);
+})
 
 //실행 부
 initScreen();
 socketConnect();
-if (isHost) {
-    makeRoom();
-}
+

@@ -9,9 +9,12 @@ load_dotenv()
 from flask import Flask, render_template, redirect
 
 import main_router
+from main_router.socket import socketio
 from constant import DBContainer, word_type
 
 app = Flask(__name__, static_url_path='/static')
+socketio.init_app(app, cors_allowed_origins="*", async_mode='threading')
+
 from pymongo import MongoClient, DESCENDING
 
 app.register_blueprint(main_router.html.game_route)
@@ -52,4 +55,6 @@ def test_rank():
 
 if __name__ == '__main__':
     print(os.environ.get("IS_DEBUG"))
-    app.run(debug=True if os.environ.get('IS_DEBUG') else False, port=5000 if os.environ.get('IS_DEBUG') else 9001)
+    socketio.run(app, debug=True if os.environ.get('IS_DEBUG') == 'True' else False, 
+                 port=int(os.environ.get('PORT', 5000)) if os.environ.get('IS_DEBUG') == 'True' else int(os.environ.get('PORT', 9001)), 
+                 host='0.0.0.0')

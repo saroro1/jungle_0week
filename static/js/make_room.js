@@ -6,7 +6,7 @@ import { GameHelper } from "./sdk/game.js";
 function gametest() {
     const gameArea = document.getElementById('game-area');
     const wordInput = document.getElementById('word-input');
-    const scoreDisplay = document.getElementById('score');
+    const opponentLivesDisplay = document.getElementById('opponent-lives');
     const livesDisplay = document.getElementById('lives');
     const startScreen = document.getElementById('start-screen');
     const gameOverScreen = document.getElementById('game-over-screen');
@@ -64,6 +64,7 @@ function gametest() {
             wordElement.textContent = word;
 
             const gameAreaWidth = gameArea.clientWidth;
+            console.log(word)
             const maxLeft = gameAreaWidth - (word.length * 30);
             wordElement.style.left = `${Math.max(0, Math.random() * maxLeft)}px`;
             this.y = 0; // y 위치 초기화
@@ -185,7 +186,6 @@ function gametest() {
 
         // 단어 서버에서 받아오기
         wordList.length = 0;
-        updateWordList();
         // console.log(gameType);
 
         startButton.style.display = 'none';
@@ -196,7 +196,6 @@ function gametest() {
         lives = initLives;
 
         livesDisplay.textContent = lives;
-        scoreDisplay.textContent = gameScore;
         activeWords = [];
         gameArea.innerHTML = '';
 
@@ -354,11 +353,6 @@ function gametest() {
         }
     });
 
-    function generateWord(word) {
-        const newWord = new ActiveWord(word.word, word.type, word.speed);
-        activeWords.push(newWord);
-    }
-
 
     // 이벤트 리스너 설정
     startButton.addEventListener('click', () => startGame(3));
@@ -395,18 +389,23 @@ function gametest() {
     })
 
     //소켓 기본 연결
-    socket.onRemoveLife((data)=>{
+    socket.onLifeChange((data)=>{
         console.log(data.new_life);
         lives = new_life;
         livesDisplay.textContent = new_life;
     })
 
     socket.onShootWord((data)=>{
-        generateWord(data.word);
+        console.log(data)
+        const newWord = new ActiveWord(data.word,data.uuid, data.type, data.speed);
+        activeWords.push(newWord);
     })
 
     //TODO opponent life change
-
+    socket.onOpponentLifeChange((data)=>{
+        console.log(data.new_life);
+        opponentLivesDisplay.textContent = new_life;
+    })
 
     // 페이지 로드 시 초기화
     initGame(0, 3);
@@ -415,7 +414,7 @@ function gametest() {
 
 const socket = new SocketClient("http://127.0.0.1:9001");
 const printLink = document.getElementById("link");
-const startGame = document.getElementById("start-button");
+const startGame2 = document.getElementById("start-button-2");
 
 function socketConnect(){
     socket.connect();
@@ -437,12 +436,14 @@ function makeRoom(){
 
 }
 
-startGame.addEventListener("click",()=>{
+startGame2.addEventListener("click",()=>{
     socket.sendStartGame();
     socket.onGameStartingSoon((data)=>{
         console.log(data.countdown);
         console.log(data.message);
         gameContainer.style.display = 'block';
+        const ready = document.getElementById('ready');
+        ready.style.display = 'none';
         gametest();
     });
     socket.onShootWord((data)=>{

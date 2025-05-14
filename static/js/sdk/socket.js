@@ -237,7 +237,7 @@ export class SocketClient {
 
   /**
    * 서버로부터 새로운 단어가 발사되었을 때 호출될 콜백을 등록합니다.
-   * @param {(data: { room_id: string, word: GameWord }) => void} callback
+   * @param {(data: GameWord) => void} callback
    */
   onShootWord(callback) {
     this.socket?.on('shoot_word', callback);

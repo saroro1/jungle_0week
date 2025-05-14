@@ -9,17 +9,17 @@
 <body>
 
     <script type="module" src="{{url_for('static', filename = 'js/make_room.js')}}"></script>
-    <div>
+    <div id="ready">
         <span id="link">none
         </span>
-        <button id="start-button">
+        <button id="start-button-2">
             game start
         </button>
     </div>
-    <div id="game-container" data-gametype="kr" display="none">
+    <div id="game-container" data-gametype="kr" style="display: none">
         <div id="info-panel">
-            <span>점수: <span id="score">0</span></span>
-            <span>목숨: <span id="lives">3</span></span>
+            <span>내 목숨: <span id="lives">3</span></span>
+            <span>상대 목숨: <span id="opponent-lives">3</span></span>
             <div class="close-btn">✕</div>
             </div>
 
@@ -28,11 +28,11 @@
 
         <input type="text" id="word-input" placeholder="단어를 입력하세요" autocomplete="off">
 
-        <div id="start-screen" class="overlay">
+        <div id="start-screen" class="overlay" stype= "display: none">
             <button id="start-button">Game Start</button>
             <div id="countdown"></div>
         </div>
-        <div id="game-over-screen" class="overlay" style="display: none;">
+        <div id="game-over-screen" class="overlay" style="display: none">
             <div class="window">
                 <span class = "window-header"></span>
                 <div class = "game-over-content-area">

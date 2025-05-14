@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     g.current_user: UserEntity
 
 
-
 @game_api_router.route("/word/<type_word>/<word_count>", methods=["GET"])
 @auth_middleware()
 def getWord(type_word: str, word_count: int):
@@ -52,7 +51,7 @@ def get_leaderboard(type_word: str, page: int, count: int):
 
         leaderboard_users = UserEntity.getLeaderBoard(type=type_word, page=page, count=count)
         leaderboard_result = [{"nickname": user.nickname, "ranking": user.ranking} for user in leaderboard_users]
-        
+
         total_users_count = UserEntity.countLeaderBoardUsers(type_word=type_word)
         total_page = math.ceil(total_users_count / count) if count > 0 else 0
 
@@ -86,38 +85,35 @@ def set_highscore():
             return jsonify({"error": "지원되지 않는 점수 타입입니다."}), 400
 
         user_id = g.current_user.id
-        
-        user_doc_for_score = DBContainer.user_db.collection.find_one(
-            {"user_id": user_id},
-            {f"high_score.{score_type}": 1}
-        )
-        
-        if not user_doc_for_score:
-             print(f"Critical: User {user_id} identified by auth_middleware, but not found in DB for highscore check.")
-             return jsonify({"error": "사용자 정보를 찾는 데 문제가 발생했습니다."}), 500
-
-        current_db_high_score = user_doc_for_score.get("high_score", {}).get(score_type, 0)
-        
-        is_new_score_a_highscore = (requested_score >= current_db_high_score)
 
         UserEntity.setHighScore(user_id=user_id, score_type=score_type, score=requested_score)
+        user_doc_for_score = UserEntity.findUserById(
+            user_id=user_id
+        )
+        if not user_doc_for_score:
+            print(f"Critical: User {user_id} identified by auth_middleware, but not found in DB for highscore check.")
+            return jsonify({"error": "사용자 정보를 찾는 데 문제가 발생했습니다."}), 500
 
-        my_ranking_info = UserEntity.getMyRanking(user_id=user_id, type_word=score_type)
-        my_ranking = -1 
-        if my_ranking_info and my_ranking_info.get('score', 0) > 0:
-            my_ranking = my_ranking_info['ranking']
-        
+
+        is_new_score_a_highscore = (requested_score > g.current_user.high_score.get(score_type))
+
+        my_ranking_info = UserEntity.getMyRanking(user_id=user_id)
+        my_ranking = -1
+        if my_ranking_info and my_ranking_info[score_type] > 0:
+            my_ranking = my_ranking_info[score_type]
+
         response_data = {
             "is_highscore": is_new_score_a_highscore,
             "my_ranking": my_ranking,
             "word_type": score_type
         }
-        
+
         return jsonify({"result": response_data}), 200
 
     except Exception as e:
         import traceback
-        print(f"Error in set_highscore for user {g.current_user.id if g.get('current_user') else 'Unknown'}: {e}\\n{traceback.format_exc()}")
+        print(
+            f"Error in set_highscore for user {g.current_user.id if g.get('current_user') else 'Unknown'}: {e}\\n{traceback.format_exc()}")
         return jsonify({"error": "서버 내부 오류가 발생했습니다."}), 500
 
 

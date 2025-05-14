@@ -13,6 +13,8 @@ let roomCreated = false;
 //guest modal
 const roomCodeInput = document.getElementById('roomCodeInput');
 const joinRoomButton = document.getElementById('join-Button');
+const loadingIndicator = document.getElementById('loading-indicator');
+let initRoomLink = "";
 
 //game
 const gameArea = document.getElementById('game-area');
@@ -378,16 +380,16 @@ wordInput.addEventListener('keypress', checkInput);
 let isHost = false;
 
 function initScreen() {
-    console.log("here");
-    console.log(gameContainer.dataset.gametype);
-    console.log(gameContainer.dataset.membertype);
     if (gameContainer.dataset.membertype == "host") {
         modalMakeRoom.style.display = "block";
         modalJoinRoom.remove();
         isHost = true;
-    } else {
+    } else if((gameContainer.dataset.membertype == "guest")) {
+        initRoomLink = gameContainer.dataset.roomlink;
         modalJoinRoom.style.display = "block";
         modalMakeRoom.remove();
+    } else {
+        window.location.href = "/404notfound";
     }
 }
 const socket = new SocketClient(window.location.protocol + "//" + window.location.host);
@@ -467,10 +469,11 @@ function socketConnect() {
     });
 
     socket.onJoinedRoom((data) => {
-        console.log(data.game_started);
+        loadingIndicator.textContent = "방장이 시작하길 기다리는 중..."
     });
     socket.onJoinedFailed((data) => {
-        console.error(data.message)
+        loadingIndicator.classList.add("hidden");
+        alert("방 참가에 실패하였습니다.");
     })
 
 }
@@ -486,7 +489,10 @@ function joinRoom(link) {
 copyButton.addEventListener('click', () => {
     if (roomCreated) {
         console.log("복사하기");
-        window.navigator.clipboard.writeText(roomLink.textContent);
+        let url = window.location.protocol +"://" + window.location.host;
+        url+=`/game/multi/${gameType}/guest/${roomLink.textContent}`;
+        console.log(url);
+        window.navigator.clipboard.writeText(url);
     } else {
         makeRoom();
         copyButton.textContent = "복사하기"
@@ -501,6 +507,7 @@ gameStartButton.addEventListener('click', () => {
 joinRoomButton.addEventListener('click', () => {
     const link = roomCodeInput.value;
     joinRoom(link);
+    loadingIndicator.classList.remove("hidden");
 })
 
 //실행 부

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 페이지를 찾을 수 없습니다</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @font-face {
+             font-family: 'DungGeunMo';
+             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+             font-weight: normal;
+             font-style: normal;
+        }
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .text-rainbow-animated {
+            background: linear-gradient(
+                to right,
+                #ef4444,
+                #f97316,
+                #eab308,
+                #22c55e,
+                #3b82f6,
+                #6366f1,
+                #a855f7,
+                #ef4444
+            );
+            background-size: 200% auto;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: rainbow-flow 2s linear infinite;
+        }
+        body {
+            font-family: 'DungGeunMo', sans-serif;
+            overflow: hidden;
+        }
+        #moving-content {
+            position: absolute;
+            will-change: transform;
+        }
+    </style>
+</head>
+<body class="bg-black h-screen flex flex-col justify-center items-center select-none">
+    <div id="moving-content" class="text-center">
+        <div>
+            <img src="https://http.cat/images/404.jpg" alt="404 Not Found Cat"
+                 class="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto shadow-2xl rounded-lg">
+        </div>
+
+        <div class="mt-1">
+            <p class="text-xl sm:text-xl md:text-6xl font-bold text-rainbow-animated">
+                없는 페이지입니다.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const movingContent = document.getElementById('moving-content');
+            if (!movingContent) return;
+
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            const speed = 7;
+
+            let dx = (Math.random() - 0.5) * speed;
+            let dy = (Math.random() - 0.5) * speed;
+            const minSpeed = speed / 7.5;
+            dx = Math.abs(dx) < minSpeed ? (dx < 0 ? -minSpeed : minSpeed) : dx;
+            dy = Math.abs(dy) < minSpeed ? (dy < 0 ? -minSpeed : minSpeed) : dy;
+
+            const rect = movingContent.getBoundingClientRect();
+            let x = (screenWidth - rect.width) / 2;
+            let y = (screenHeight - rect.height) / 2;
+            movingContent.style.left = `${x}px`;
+            movingContent.style.top = `${y}px`;
+
+            function animate() {
+                const currentRect = movingContent.getBoundingClientRect();
+                const horizontalOverflow = currentRect.width / 3;
+
+                x += dx;
+                y += dy;
+
+                if (x <= -horizontalOverflow || x + currentRect.width >= screenWidth + horizontalOverflow) {
+                    dx = -dx;
+                    if (x <= -horizontalOverflow) {
+                        x = -horizontalOverflow;
+                    } else if (x + currentRect.width >= screenWidth + horizontalOverflow) {
+                        x = screenWidth + horizontalOverflow - currentRect.width;
+                    }
+                }
+
+                if (y <= 0 || y + currentRect.height >= screenHeight) {
+                    dy = -dy;
+                    if (y <= 0) y = 0;
+                    else if (y + currentRect.height >= screenHeight) y = screenHeight - currentRect.height;
+                }
+
+                movingContent.style.left = `${x}px`;
+                movingContent.style.top = `${y}px`;
+
+                requestAnimationFrame(animate);
+            }
+            
+            setTimeout(animate, 100);
+        });
+    </script>
+</body>
+</html>

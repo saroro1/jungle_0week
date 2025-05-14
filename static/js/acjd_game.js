@@ -246,10 +246,11 @@ async function gameOver() {
     sounds["bgm"].currentTime = 0;
     clearInterval(wordGenerationInterval);
     clearInterval(gameInterval);
-    const response = await GameHelper.setHighscore("kr",gameScore);
-    if (response.result.is_highscore){
-        newHighScore.style.display = 'flex';
-    }
+    // const response = await GameHelper.setHighscore("kr",gameScore);
+    // if (response.result.is_highscore){
+    //     newHighScore.style.display = 'flex';
+    // }
+    newHighScore.style.display = 'inline-block';
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;

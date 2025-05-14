@@ -173,6 +173,15 @@ button.alert-button {
     animation: gradient-move 1.5s linear infinite; /* 애니메이션 설정 */
 }
 
+@keyframes gradient-move {
+  0% {
+    background-position: 200% 0%; /* 시작 위치 */
+  }
+  100% {
+    background-position: -200% 0%; /* 끝 위치 */
+  }
+}
+
 /* 게임 시작 시 숨길 요소
 #game-container > *:not(#start-screen):not(#game-over-screen) {
     필요에 따라 초기 숨김 처리} */

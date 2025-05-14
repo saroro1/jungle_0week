@@ -405,7 +405,7 @@ def handle_join_room(data):
         emit('joined_failed', {'message': '이미 방에 참여중입니다. 먼저 현재 방을 나간 후 시도해주세요.'}, room=sid)
         return
 
-    room_id_to_join = data.get('id') # 클라이언트에서는 room_id로 보낼 수 있으나, 서버에서는 'id'로 받고 있었으므로 유지 또는 확인 필요.
+    room_id_to_join = data.get('room_id') # 클라이언트에서는 room_id로 보낼 수 있으나, 서버에서는 'id'로 받고 있었으므로 유지 또는 확인 필요.
                                      # SocketClient.js 에서는 joinRoom(roomId) 이고 서버로 { room_id: roomId } 를 보냄.
                                      # 따라서 data.get('room_id') 가 더 적절해 보임. 우선은 'id' 유지 후 필요시 수정.
     if not room_id_to_join:

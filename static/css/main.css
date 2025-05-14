@@ -52,6 +52,7 @@ body {
   border-radius: 10px 10px 0 0;
   border-bottom: 1px solid #000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  padding-bottom: 1.5rem; /* 충분한 공간 확보 */
 }
 
 .single-button {
@@ -127,16 +128,14 @@ body {
   background-color: #db3d0d;
 }
 
-
 .copy-button {
-  background-color: #223bc5;
+  background-color: #5b22c5;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  margin-right: 1.5rem;
   font-size: 1rem;
-  width: 7rem;
-  height: 3rem;
+  width: 100px;
+  height: 50px;
   box-sizing: border-box;
   border: 0.7px solid black;
   transition: background-color 0.3s;
@@ -144,17 +143,17 @@ body {
 }
 
 .copy-button:hover {
-  background-color: #2225c5;
+  background-color: #461783;
 }
 
 .multistart-button {
-  background-color: #fffb00;
-  color: black;
+  background-color: #0004ff;
+  color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 1rem;
-  width: 7rem;
-  height: 7rem;
+  width: 100px;
+  height: 50px;
   box-sizing: border-box;
   border: 0.7px solid white;
   transition: background-color 0.3s;
@@ -162,7 +161,7 @@ body {
 }
 
 .multistart-button:hover {
-  background-color: #ebe714;
+  background-color: #0407bd;
 }
 .join-button {
   background-color: #02db1f;

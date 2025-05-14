@@ -9,9 +9,8 @@ function closeModeModal() {
 }
 
 function openMultiModal() {
-
   closeModeModal();
-  
+
   document.getElementById("modal_multi").style.display = "block";
 }
 
@@ -20,9 +19,8 @@ function closeMultiModal() {
 }
 
 function openMakeRoomModal() {
-
   closeMultiModal();
-  
+
   document.getElementById("modal_MakeRoom").style.display = "block";
 }
 
@@ -31,21 +29,21 @@ function closeMakeRoomModal() {
 }
 
 function openJoinRoomModal() {
-
   closeMultiModal();
-  
+
   document.getElementById("modal_JoinRoom").style.display = "block";
 }
 
 function closeJoinRoomModal() {
-  document.getElementById("modal_JoinRoom").style.display = "none";
+  window.location.href = "/";
 }
 
 function goToMulti(isHost) {
   const typeDropdwon = document.getElementById("modeSelectDropdown");
-  window.location.href = `/game/multi/${typeDropdwon.value}/${isHost?"host":"guest"}`;
+  window.location.href = `/game/multi/${typeDropdwon.value}/${
+    isHost ? "host" : "guest"
+  }`;
 }
-
 
 function updateStartAndRankingButtons() {
   const selectBox = document.getElementById("modeSelectDropdown");
@@ -84,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
   updateStartAndRankingButtons();
 });
 
-singleButton.addEventListener('click',()=>{
+singleButton.addEventListener("click", () => {
   console.log("click");
   const typeDropdwon = document.getElementById("modeSelectDropdown");
   window.location.href = `/game/play/${typeDropdwon.value}`;

@@ -1,95 +1,251 @@
 <!DOCTYPE html>
-
 <html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename = 'css/font.css')}}"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <link rel="stylesheet" href="{{url_for('static', filename = 'css/font.css')}}" />
-  <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-image: url("{{url_for('static',filename = '/asset/img/window_background.png')}}");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+        background-attachment: fixed;
+      }
 
-  <style>
-    body {
-      background-image: url("{{url_for('static',filename = '/asset/img/window_background.png')}}");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center center;
-      background-attachment: fixed;
-    }
+      .title {
+        font-family: "Ycomputer-Regular";
+        font-size: 110px;
+        color: white;
+        text-align: center;
+        margin-top: 20%;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+          1px 1px 0 #000;
+        font-weight: bold;
+      }
+      .modal {
+        position: absolute;
+        align-items: center;
+        background-color: #ddd;
+        border: #000 solid 0.8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        z-index: 1000;
+        display: none;
+        text-align: center;
+        font-family: "Ycomputer-Regular";
+        height: 360px;
+        width: 400px;
+      }
 
-    .title {
-      font-family: "Ycomputer-Regular";
-      font-size: 110px;
-      color: white;
-      text-align: center;
-      margin-top: 20%;
-      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-      font-weight: bold;
-    }
-  </style>
-</head>
+      .close-btn {
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(to bottom, #f66, #d00);
+        border-radius: 4px;
+        color: white;
+        text-align: center;
+        line-height: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.5);
+      }
+      .title-bar {
+        background: linear-gradient(
+          to bottom,
+          #0033b0 0%,
+          #0043e9 50%,
+          #3366ff 100%
+        );
+        height: 27px;
+        min-height: 25px;
+        width: 100%;
+        border-radius: 10px 10px 0 0;
+        border-bottom: 1px solid #000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
+      .single-button {
+        background-color: #22c55e;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        margin-right: 1.5rem;
+        font-size: 1.5rem;
+        width: 9rem;
+        height: 10rem;
+        box-sizing: border-box;
+        border: 0.7px solid black;
+        transition: background-color 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
 
-<body class="h-screen flex flex-col items-center justify-center relative text-white">
-  <div class="absolute top-6 right-6">
-    <a href="{{ url_for('game.mypage') }}" class="text-black underline text-lg hover:text-gray-700"
-      style="font-family: 'Ycomputer-Regular';">
-      마이페이지
-    </a>
-  </div>
-  <div>
-    <h1 class="title">SQUALL</h1>
-  </div>
-  <div class="mt-12">
-    <a id="startButton" href="#" class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
-      style="font-family: 'Ycomputer-Regular'; text-decoration: none;">
-      시작하기
-    </a>
-  </div>
+      .single-button:hover {
+        background-color: #16a34a;
+      }
+      .battle-button {
+        background-color: #ff0000;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+       
+        font-size: 1.5rem;
+        width: 9rem;
+        height: 10rem;
+        box-sizing: border-box;
+        border: 0.7px solid black;
+        transition: background-color 0.3s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
 
-  <div class="flex flex-row items-center justify-center space-x-12 mt-10">
+      .battle-button:hover {
+        background-color: #ce2020;
+      }
+    </style>
+  </head>
 
-    <a id="rankingButton" href="{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}"
-      class="text-white text-xl underline hover:text-gray-700"
-      style="font-family: 'Ycomputer-Regular'">
-      랭킹보러가기
-    </a>
+  <body
+    class="h-screen flex flex-col items-center justify-center relative text-white"
+  >
+    <div class="absolute top-6 right-6">
+      <a
+        href="{{ url_for('game.mypage') }}"
+        class="text-black underline text-lg hover:text-gray-700"
+        style="font-family: 'Ycomputer-Regular'"
+      >
+        마이페이지
+      </a>
+    </div>
+    <div>
+      <h1 class="title">SQUALL</h1>
+    </div>
+    <div class="mt-12">
+      <button
+        id="startButton"
+        class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
+        style="font-family: 'Ycomputer-Regular'; text-decoration: none"
+        onclick="openModal()"
+      >
+        시작하기
+      </button>
+    </div>
+    <div id="modal" class="modal">
+      <div class="flex flex-col items-center title-bar">
+        <button
+          id="closeButton"
+          class="close-btn absolute top-1 right-2"
+          onclick="closeModal()"
+        >
+          X
+        </button>
 
-    <div class="relative">
-      <select id="modeSelectDropdown" class="bg-white text-black rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md appearance-none cursor-pointer pr-8"
-        style="font-family: 'Pretendard-Regular';" onchange="updateStartAndRankingButtons()">
-        <option class="py-2 px-4 hover:bg-gray-100" value="" disabled selected>모드선택</option>
-        <option class="py-2 px-4 hover:bg-gray-100" value="kr" selected>한글</option>
-        <option class="py-2 px-4 hover:bg-gray-100" value="en">영어</option>
-        <option class="py-2 px-4 hover:bg-gray-100" value="complex">복합</option>
-      </select>
-      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        <h2 class="text-4xl mb-4 font-bold mt-20 text-black">모드 고르기</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          <div class="mt-7 ">
+            <button id="startButton" class="single-button ">싱글모드</button>
+            <button
+              id="battlemodeButton"
+              class=" battle-button ml-4"
+              onclick=""
+            >
+              경쟁모드
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+    <div class="flex flex-row items-center justify-center space-x-12 mt-10">
+      <a
+        id="rankingButton"
+        href="{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}"
+        class="text-white text-xl underline hover:text-gray-700"
+        style="font-family: 'Ycomputer-Regular'"
+      >
+        랭킹보러가기
+      </a>
+
+      <div class="relative">
+        <select
+          id="modeSelectDropdown"
+          class="bg-white text-black rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md appearance-none cursor-pointer pr-8"
+          style="font-family: 'Pretendard-Regular'"
+          onchange="updateStartAndRankingButtons()"
+        >
+          <option
+            class="py-2 px-4 hover:bg-gray-100"
+            value=""
+            disabled
+            selected
+          >
+            모드선택
+          </option>
+          <option class="py-2 px-4 hover:bg-gray-100" value="kr" selected>
+            한글
+          </option>
+          <option class="py-2 px-4 hover:bg-gray-100" value="en">영어</option>
+          <option class="py-2 px-4 hover:bg-gray-100" value="complex">
+            복합
+          </option>
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
     <script>
+      function openModal() {
+        document.getElementById("modal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("modal").style.display = "none";
+      }
+
       function updateStartAndRankingButtons() {
         const selectBox = document.getElementById("modeSelectDropdown");
-        const startButton = document.getElementById("startButton");
         const rankingButton = document.getElementById("rankingButton");
         const selectedMode = selectBox.value;
-        const rankingUrlTemplate = "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}";
+        const rankingUrlTemplate =
+          "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}";
 
         if (selectedMode) {
-          startButton.href = `{{ url_for('game.play', gametype='') }}${selectedMode}`;
-          rankingButton.href = rankingUrlTemplate.replace('TEMP_WORD', encodeURIComponent(selectedMode));
+          rankingButton.href = rankingUrlTemplate.replace(
+            "TEMP_WORD",
+            encodeURIComponent(selectedMode)
+          );
         } else {
-          startButton.href = "#";
-          rankingButton.href = "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}".replace('TEMP_WORD', '');
+          rankingButton.href =
+            "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}".replace(
+              "TEMP_WORD",
+              ""
+            );
         }
       }
 
-      // 페이지 로딩 시 초기 상태 설정 (선택 사항)
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         updateStartAndRankingButtons();
       });
     </script>
-  </div>
-</body>
-
+  </body>
 </html>

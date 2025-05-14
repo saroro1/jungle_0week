@@ -217,6 +217,7 @@ import { GameHelper } from "./sdk/game.js";
     function startGame(initLives = 3) {
         // 단어 서버에서 받아오기
         wordList.length = 0;
+        wordInput.value = ""
         updateWordList();
         console.log(gameType);
 

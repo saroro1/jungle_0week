@@ -21,7 +21,13 @@ function joinRoom(link){
     socket.onJoinedFailed((data)=>{
         console.error(data.message)
     })
-
+    socket.onGameStartingSoon((data)=>{
+        console.log(data.countdown);
+        console.log(data.message);
+    });
+    socket.onShootWord((data)=>{
+        console.log(data);
+    });
 }
 socketConnect();
 

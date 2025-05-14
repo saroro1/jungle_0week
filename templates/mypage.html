@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Custom Browser Window Fullscreen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../static/css/font.css" />
+    <link rel="stylesheet" href="../static/css/mypage.css" />
+    <script>
+      function enableEdit(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.removeAttribute("readonly");
+        field.focus();
+      }
+      function checkAnyChange() {
+        const passwordField = document.getElementById("passwordField");
+        const userField = document.getElementById("userField");
+        const saveButton = document.getElementById("saveButton");
+        const isPasswordChange = passwordField.value !== "password123";
+        const isUserChange = userField.value !== "User";
+        saveButton.disabled = !isPasswordChange && !isUserChange;
+      }
+      function saveChanges() {
+        const passwordField = document.getElementById("passwordField");
+        const userField = document.getElementById("userField");
+        const saveButton = document.getElementById("saveButton");
+
+        alert(
+          `Changes saved:\nUsername: ${userField.value}\nPassword: ${passwordField.value}`
+        );
+        saveButton.disabled = true;
+      }
+    </script>
+  </head>
+  <body>
+    <div class="browser-window">
+      <div class="title-bar">
+        <span class="title">
+          <img
+            src="../static/asset/img/window_icon.png"
+            alt="Browser Icon"
+            class="browser-icon"
+          />
+          SQUALL-MYPAGE
+        </span>
+        <div class="window-controls">
+          <button class="control-button minimize">-</button>
+          <button class="control-button maximize">□</button>
+          <button class="control-button close">x</button>
+        </div>
+      </div>
+      <div class="menu-bar">
+        <span class="menu-item"><u>F</u>ile</span>
+        <span class="menu-item"><u>E</u>dit</span>
+        <span class="menu-item"><u>V</u>iew</span>
+        <span class="menu-item"><u>F</u>avorites</span>
+        <span class="menu-item"><u>T</u>ools</span>
+        <span class="menu-item"><u>H</u>elp</span>
+      </div>
+
+      <div class="content-area">
+        <div class="w-full flex justify-end mb-4">
+          <button
+            class="text-red-500 underline text-xl hover:text-red-700"
+            style="font-family: 'Ycomputer-Regular'"
+          >
+            로그아웃
+          </button>
+        </div>
+
+        <h1 class="h1_title mt-6">마이페이지</h1>
+        <!--닉네임 ID 비밀번호 모두 서버에서 가져온 값을 띄워줌
+        이후 edit아이콘을 누르면 닉네임 비밀번호 수정 가능, 수정 후 저장하기 버튼 누르면 서버에 변경된 값 저장되어야함
+        (서버 연결 부분 구현 X 현재 수정과 저장하기 버튼만 활성화) -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-4" style="font-family: Pretendard">
+            <div class="w-24 font-bold text-xl">닉네임</div>
+            <div class="flex-1 text-xl">
+              <input
+                type="text"
+                id="userField"
+                value="User"
+                readonly
+                class="w-full border p-1 bg-gray-100 focus:bg-white focus:outline-none"
+                oninput="checkAnyChange()"
+              />
+            </div>
+            <button onclick="enableEdit('userField')">
+              <img
+                src="../static/asset/img/edit_icon.png"
+                class="w-5 h-5"
+                alt="수정"
+              />
+            </button>
+          </div>
+
+          <div class="flex items-center gap-4" style="font-family: Pretendard">
+            <div class="w-24 font-bold text-xl">ID</div>
+            <div class="flex-1">
+              <span class="readonly-text text-xl">User_01</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 mb-2">
+            <div class="w-24 font-bold text-xl" style="font-family: Pretendard">
+              비밀번호
+            </div>
+            <div class="flex-1">
+              <input
+                type="password"
+                id="passwordField"
+                value="password123"
+                readonly
+                class="w-full border p-1 bg-gray-100 focus:bg-white focus:outline-none"
+                oninput="checkAnyChange()"
+              />
+            </div>
+            <button onclick="enableEdit('passwordField')">
+              <img
+                src="../static/asset/img/edit_icon.png"
+                class="w-5 h-5"
+                alt="수정"
+              />
+            </button>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              id="saveButton"
+              disabled
+              onclick="saveChanges()"
+              class="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 text-xl"
+              style="font-family: 'Ycomputer-Regular'"
+            >
+              저장하기
+            </button>
+          </div>
+        </div>
+
+        <!-- 랭킹부분 서버에서 유저의 게임 기록이 남아있는 모드의 점수와 등수를 한번에 표시
+         지금은 예시 데이터가 들어가있음-->
+        <div class="mt-80">
+          <h1 class="h1_title">랭킹</h1>
+          <table
+            class="w-full border-collapse border border-gray-300"
+            style="font-family: 'Pretendard'"
+          >
+            <thead>
+              <tr>
+                <th class="border border-gray-300 p-2">모드</th>
+                <th class="border border-gray-300 p-2">순위</th>
+                <th class="border border-gray-300 p-2">점수</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-gray-300 p-2">한글</td>
+                <td class="border border-gray-300 p-2">1</td>
+                <td class="border border-gray-300 p-2">1000</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 p-2">영어</td>
+                <td class="border border-gray-300 p-2">2</td>
+                <td class="border border-gray-300 p-2">900</td>
+              </tr>
+              <tr>
+                <td class="border border-gray-300 p-2">복합</td>
+                <td class="border border-gray-300 p-2">3</td>
+                <td class="border border-gray-300 p-2">800</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <span class="status-text" style="font-family: Ycomputer-Regular"
+          >Done</span
+        >
+        <div class="status-icons">
+          <img
+            src="../static/asset/img/page_icon.png"
+            alt="Windows Icon"
+            class="windows-icon"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

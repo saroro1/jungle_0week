@@ -1,12 +1,13 @@
 from flask import Blueprint, render_template, Response, url_for, make_response, redirect, request, g
 import math
 
+from constant import word_type
 from middleware import auth_middleware
 from type.database.user_entity import UserEntity
 
 game_route = Blueprint("game", __name__, url_prefix="/game")
 '''
-/play
+/play/{gameType}
 /mypage
 /
 /ranking
@@ -92,8 +93,11 @@ def game_ranking_page(type_word: str, page: int):
 @auth_middleware(use_redirect=True)
 def game_main_page():
     return render_template("./main.html")
-@game_route.route("/play", endpoint="play")
+@game_route.route("/play/<gametype>", endpoint="play")
 @auth_middleware(use_redirect=True)
-def game_play_page():
-    return render_template("./game/acid_game.html")
+def game_play_page(gametype : str):
+    print(gametype)
+    if gametype not in word_type:
+        return redirect("/")
+    return render_template("./game/acid_game.html", gametype = gametype)
 

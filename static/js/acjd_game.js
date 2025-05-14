@@ -52,6 +52,10 @@ import { GameHelper } from "./sdk/game.js";
     let lastTime = 0;
     let animationFrameId;
 
+    let isPaused = false;      // 일시 정지 상태 여부
+    let gameEnd = false;
+
+
     // word class
     class ActiveWord {
         baseScore = 10
@@ -237,6 +241,7 @@ import { GameHelper } from "./sdk/game.js";
 
     // 게임 시작 함수
     async function startGame(initLives = 3) {
+        gameEnd = false;
         resetGameDisplay();
 
         // 단어 서버에서 받아오기
@@ -258,15 +263,14 @@ import { GameHelper } from "./sdk/game.js";
         activeWords = [];
         gameArea.innerHTML = '';
 
+        sounds["bgm"].play();
+
         if (wordGenerationInterval) {
             clearInterval(wordGenerationInterval);
             wordGenerationInterval = null; // 명시적으로 null 할당
         }
         wordGenerationInterval = setInterval(generateWord, generationRate);
 
-        sounds["gameOver"].pause();
-        sounds["gameOver"].currentTime = 0;
-        sounds["bgm"].play();
 
         lastTime = 0;
         if (animationFrameId) {
@@ -278,6 +282,7 @@ import { GameHelper } from "./sdk/game.js";
 
     // 게임 오버 함수
     async function gameOver() {
+        gameEnd = true;
         sounds["bgm"].pause();
         sounds["bgm"].currentTime = 0;
         console.log(gameType)
@@ -412,7 +417,68 @@ import { GameHelper } from "./sdk/game.js";
         countdownDisplay.style.display = 'none';
         gameOverScreen.style.display = 'none';
         newHighScore.style.display = 'none';
+        sounds["gameOver"].pause();
+        sounds["gameOver"].currentTime = 0;
     }
+
+    //퍼즈 함수
+    function pause() {
+        sounds["bgm"].pause();
+        if (!isPaused) {
+            // 단어 생성 중단
+            if (wordGenerationInterval) {
+                clearInterval(wordGenerationInterval);
+                wordGenerationInterval = null;
+            }
+
+            // 애니메이션 프레임 중단
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            isPaused = true;
+            console.log("애니메이션이 일시 정지되었습니다.");
+        } else {
+            console.log("애니메이션은 이미 일시 정지된 상태입니다.");
+        }
+    }
+
+    function resume() {
+        sounds["bgm"].play();
+        if (isPaused) {
+            // 단어 생성 재개
+            if (!wordGenerationInterval) {
+                wordGenerationInterval = setInterval(generateWord, generationRate);
+            }
+
+            // 애니메이션 프레임 재개
+            if (!animationFrameId) {
+                lastTime = performance.now(); // 재개 시점 기준으로 lastTime 초기화
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+            isPaused = false;
+            console.log("애니메이션이 재개되었습니다.");
+        } else {
+            console.log("애니메이션은 현재 실행 중입니다.");
+        }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        //게임 종료시는 작동 안함.
+        if(gameEnd){
+            return;
+        }
+        if (document.hidden) {
+            // 사용자가 창을 벗어났을 때 실행할 코드
+            pause();
+            console.log("창을 벗어났습니다.");
+        } else {
+            // 사용자가 다시 창으로 돌아왔을 때 실행할 코드
+            resume();
+            console.log("창으로 돌아왔습니다.");
+        }
+    });
+
 
     // 이벤트 리스너 설정
     startButton.addEventListener('click', () => startGame(3));
@@ -428,5 +494,6 @@ import { GameHelper } from "./sdk/game.js";
 
     // 페이지 로드 시 초기화
     initGame(0, 3);
+
 
 })()

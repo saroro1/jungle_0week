@@ -5,6 +5,6 @@ from pydantic import BaseModel
 
 
 class ModifyUserReq(BaseModel):
-    id: Optional[str]
+    id: str
     password: Optional[str]
     nickname: Optional[str]

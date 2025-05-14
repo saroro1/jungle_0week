@@ -61,7 +61,7 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
     white-space: nowrap; /* 단어가 줄바꿈되지 않도록 */
-    font-size: 1.5em;
+    font-size: 25px;
 }
 
 #word-input {
@@ -182,6 +182,11 @@ button.alert-button {
     background-position: -200% 0%; /* 끝 위치 */
   }
 }
+#start-screen {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center;
+}
 
 #start-button {
     transition-duration: 0.5s;
@@ -196,6 +201,36 @@ button.alert-button {
     background-color: #9f9f9f;
     box-shadow: none;
     font-size: 1.8rem;
+}
+
+#countdown {
+  font-size: 100px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
+  display: none;
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  transition: transform 0.1s ease-in-out, opacity 0.1s ease-in-out;
+}
+
+.animate-countdown {
+  animation: scaleUpDown 0.8s ease-in-out;
+}
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 /* 게임 시작 시 숨길 요소
 #game-container > *:not(#start-screen):not(#game-over-screen) {

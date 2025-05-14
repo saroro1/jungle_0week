@@ -38,7 +38,7 @@ document.getElementById("sign_up_btn").addEventListener("click", async function(
             alert(res.error);
           } else {
             alert("회원가입 성공");
-            window.location.replace("{{ url_for('auth.page_sign_in') }}");
+            window.location.replace("/auth/sign_in");
 
           }
         });

@@ -162,6 +162,17 @@ button.alert-button {
     border-right-color: #FFFFFF;
 }
 
+#new-high-score {
+    font-size: 1em; /* 텍스트 크기 설정 */
+    font-weight: 500; /* 텍스트 두께 설정 */
+    cursor: pointer; /* 마우스 커서 포인터로 변경 */
+    background: linear-gradient(45deg, #fc8080, #ffa500, #ffff00, #008000, #4b0082, #ee82ee, #fc8080);
+    background-size: 200% 200%; /* 배경 크기 확장 */
+    -webkit-background-clip: text; /* 텍스트에만 배경 클립 */
+    -webkit-text-fill-color: transparent; /* 텍스트 외부 색상 투명 처리 */
+    animation: gradient-move 1.5s linear infinite; /* 애니메이션 설정 */
+}
+
 /* 게임 시작 시 숨길 요소
 #game-container > *:not(#start-screen):not(#game-over-screen) {
     필요에 따라 초기 숨김 처리} */

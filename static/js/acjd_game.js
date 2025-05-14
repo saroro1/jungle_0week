@@ -9,6 +9,7 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const startButton = document.getElementById('start-button');
 const finalScoreDisplay = document.getElementById('final-score');
 const userNickName = document.getElementById('user-nickname');
+const newHighScore = document.getElementById('new-high-score');
 
 const goToMainButton = document.getElementById('main-page-button');
 const restartButton = document.getElementById('restart-button');
@@ -216,6 +217,7 @@ function startGame(initLives = 3) {
     updateWordList();
     // console.log(wordList);
 
+    newHighScore.style.display = 'none';
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
     wordInput.disabled = false;
@@ -242,7 +244,12 @@ function startGame(initLives = 3) {
 async function gameOver() {
     sounds["bgm"].pause();
     sounds["bgm"].currentTime = 0;
-    await GameHelper.setHighscore("kr",gameScore);
+    clearInterval(wordGenerationInterval);
+    clearInterval(gameInterval);
+    const response = await GameHelper.setHighscore("kr",gameScore);
+    if (response.result.is_highscore){
+        newHighScore.style.display = 'flex';
+    }
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
@@ -257,7 +264,7 @@ async function gameOver() {
 
 // 단어 생성 함수 -> 서버에서 보내주면 셔플
 function generateWord() {
-    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,200+difficalty * speedConst);
+    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,2+difficalty * speedConst);
     index++;
     activeWords.push(newWord);
 

@@ -1,4 +1,4 @@
-# 스크립트 시작 시 출력 인코딩을 UTF-8로 설정 (필요에 따라)
+﻿# 스크립트 시작 시 출력 인코딩을 UTF-8로 설정 (필요에 따라)
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
 Write-Host "사용할 가상 환경 폴더 이름을 입력하세요 (기본값: .venv). 엔터를 누르면 기본값이 적용됩니다."

@@ -7,16 +7,20 @@ const livesDisplay = document.getElementById('lives');
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
 const startButton = document.getElementById('start-button');
-const restartButton = document.getElementById('restart-button');
 const finalScoreDisplay = document.getElementById('final-score');
+const userNickName = document.getElementById('user-nickname');
+const newHighScore = document.getElementById('new-high-score');
 
+const goToMainButton = document.getElementById('main-page-button');
+const restartButton = document.getElementById('restart-button');
+const goToRankButton = document.getElementById('ranking-button');
 //음악
 const sounds = {
-    "bgm": new Audio("static/asset/music/bgm.mp3"),
-    "hitPath" : "static/asset/music/hit2.m4a",
-    "failPath": "static/asset/music/fail.m4a",
-    "gameOver": new Audio("static/asset/music/game_over.mp3"),
-    "crashPath": "static/asset/music/crash.m4a"
+    "bgm": new Audio("/static/asset/music/bgm.mp3"),
+    "hitPath" : "/static/asset/music/hit2.m4a",
+    "failPath": "/static/asset/music/fail.m4a",
+    "gameOver": new Audio("/static/asset/music/game_over.mp3"),
+    "crashPath": "/static/asset/music/crash.m4a"
 }
 sounds["bgm"].loop = true;
 sounds["bgm"].volume = 0.3
@@ -86,7 +90,7 @@ class ActiveWord {
             default:
                 {}
         }
-    }
+    } 
 
     setWord(newWord) {
         this.wordElement.textContent = newWord;
@@ -104,7 +108,7 @@ class ActiveWord {
     setLeft(newLeft){
         this.wordElement.style.left = newLeft;
     }
-
+ 
     getTop(){
         return parseInt(this.wordElement.style.top || 0);
     }
@@ -177,6 +181,10 @@ function shuffle(array) {
 // 서버에 단어 요청
 async function requestWords(){
     const res = await GameHelper.getWords("kr", 20);
+    if(res.error){
+        alert("서버에서 단어를 전달 받지 못했습니다.");
+        window.location.href = "{{ url_for('play') }}";
+    }
     return res.result ?? [];
     // return [{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "긴긴긴긴긴긴긴긴긴긴긴긴단어", "type": "normal"},{"word": "짧", "type": "normal"}];
 }
@@ -209,6 +217,7 @@ function startGame(initLives = 3) {
     updateWordList();
     // console.log(wordList);
 
+    newHighScore.style.display = 'none';
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
     wordInput.disabled = false;
@@ -232,13 +241,23 @@ function startGame(initLives = 3) {
 }
 
 // 게임 오버 함수
-function gameOver() {
+async function gameOver() {
     sounds["bgm"].pause();
     sounds["bgm"].currentTime = 0;
+    clearInterval(wordGenerationInterval);
+    clearInterval(gameInterval);
+    const response = await GameHelper.setHighscore("kr",gameScore);
+    if (response.result.is_highscore){
+        newHighScore.style.display = 'flex';
+    }
     clearInterval(gameInterval);
     clearInterval(wordGenerationInterval);
     wordInput.disabled = true;
     finalScoreDisplay.textContent = gameScore;
+
+    //TODO : user닉네임 추가
+    userNickName.textContent = '닉네임';
+
     gameOverScreen.style.display = 'flex'; // 게임 오버 화면 표시
     sounds["gameOver"].play()
 }
@@ -304,6 +323,12 @@ function checkInput(e) {
 // 이벤트 리스너 설정
 startButton.addEventListener('click', () => startGame(3));
 restartButton.addEventListener('click', () => startGame(3)); // 다시 시작 버튼도 startGame 호출
+goToMainButton.addEventListener('click', ()=>{
+    window.location.replace("/");
+});
+goToRankButton.addEventListener('click', ()=>{
+    window.location.href = `/game/ranking/kr/${1}`;
+});
 wordInput.addEventListener('keypress', checkInput); // 입력할 때마다 체크
 
 // 페이지 로드 시 초기화

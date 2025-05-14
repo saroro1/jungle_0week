@@ -1,29 +1,42 @@
 @import url('font.css');
+@import url('xp_style.css');
 
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: black;
     margin: 0;
     font-family: sans-serif;
 }
 
+.close-btn{
+    position: absolute ;
+    left: 95%
+}
+
 #game-container {
-    border: 1px solid #ccc;
-    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.6);
+    background-color: #ece9d8;
+    overflow: hidden;
+    border: 2px solid #0078d7;
     position: relative; /* 내부 요소 absolute positioning 기준 */
-    width: 1000px; /* 예시 크기 */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 90%; /* 예시 크기 */
 }
 
 #info-panel {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+    background: linear-gradient(to bottom, #3a9dfb, #1c64d1);
+    color: white;
+    padding: 10px 12px;
     display: flex;
-    justify-content: space-around;
+    align-items: center;
     font-weight: bold;
+    font-size: 25px;
+    font-family: "Ycomputer-Regular";
+
+    justify-content: space-around;
 }
 
 #game-area {
@@ -54,10 +67,15 @@ body {
     width: calc(100% - 22px); /* padding 고려 */
     padding: 10px;
     margin: 10px;
-    border: 1px solid #ccc;
     box-sizing: border-box; /* padding 포함하여 width 계산 */
     font-size: 1.1em;
     text-align: center;
+
+    border: 1px solid black;
+    border-radius: 12px;
+    box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.6);
+    background-color: #ece9d8;
+    overflow: hidden;
 }
 
 /* 오버레이 공통 스타일 */
@@ -68,7 +86,7 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    color: white;
+    color: transparent;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -82,16 +100,79 @@ body {
 
 .overlay button {
     padding: 10px 20px;
-    font-size: 1.2em;
+    font-size: 1.5em;
     cursor: pointer;
     margin-top: 20px;
+    color: #1c64d1;
+    background-color: white;
+    font-family: 'Ycomputer-Regular';
+
 }
 
 #game-over-screen p {
     font-size: 1.1em;
 }
-
-/* 게임 시작 시 숨길 요소 */
-#game-container > *:not(#start-screen):not(#game-over-screen) {
-    /* 필요에 따라 초기 숨김 처리 */
+.game-over-content-area {
+    padding: 15px;
+    background-color: #ECE9D8; /* XP 대화상자 배경색 */
+    color: black;
 }
+
+.game-over-title {
+    font-family: 'Ycomputer-Regular';
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.game-over-button-area {
+    border-top: 1px solid #ACA899; /* 상단 구분선 */
+    background-color: #ECE9D8; /* XP 대화상자 배경색 */
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex-direction: row;
+}
+
+button.alert-button {
+    min-width: 80px;
+    padding: 4px 12px;
+    margin: 10px 12px 10px 0px;
+    font-family: '굴림';
+    font-size: 0.8em;
+    color: #000000;
+    background-color: #F0F0F0;
+    border: 1px solid #000000; /* 기본 검정 테두리 */
+    border-top-color: #FFFFFF; /* 밝은 상단 */
+    border-left-color: #FFFFFF; /* 밝은 왼쪽 */
+    border-right-color: #707070; /* 어두운 오른쪽 */
+    border-bottom-color: #707070; /* 어두운 하단 */
+    cursor: pointer;
+    outline: none; /* 포커스 시 기본 아웃라인 제거 */
+}
+
+.alert-button:hover {
+    border-color: #0078D7; /* 호버 시 파란색 테두리 (XP 스타일) */
+}
+
+.alert-button:active {
+    background-color: #E0E0E0;
+    border-top-color: #707070;
+    border-left-color: #707070;
+    border-bottom-color: #FFFFFF;
+    border-right-color: #FFFFFF;
+}
+
+#new-high-score {
+    font-size: 1em; /* 텍스트 크기 설정 */
+    font-weight: 500; /* 텍스트 두께 설정 */
+    cursor: pointer; /* 마우스 커서 포인터로 변경 */
+    background: linear-gradient(45deg, #fc8080, #ffa500, #ffff00, #008000, #4b0082, #ee82ee, #fc8080);
+    background-size: 200% 200%; /* 배경 크기 확장 */
+    -webkit-background-clip: text; /* 텍스트에만 배경 클립 */
+    -webkit-text-fill-color: transparent; /* 텍스트 외부 색상 투명 처리 */
+    animation: gradient-move 1.5s linear infinite; /* 애니메이션 설정 */
+}
+
+/* 게임 시작 시 숨길 요소
+#game-container > *:not(#start-screen):not(#game-over-screen) {
+    필요에 따라 초기 숨김 처리} */

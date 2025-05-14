@@ -1,14 +1,19 @@
 import os
+from datetime import datetime
+from typing import TYPE_CHECKING
 
 import bcrypt
-import jwt
-from flask import request, Blueprint, jsonify, Response, url_for
+from flask import request, Blueprint, jsonify, Response, url_for, make_response, g
 
 from constant import DBContainer
-from type.req import LoginReq, SignUpReq
+from middleware import auth_middleware
+from type.database.user_entity import HighScoreDict, UserEntity
+from type.req import LoginReq, SignUpReq, ModifyUserReq
 from utils import Jwt
 
 auth_api_router = Blueprint("auth_api", __name__, url_prefix="/api/auth")
+if TYPE_CHECKING:
+    g.current_user: UserEntity
 
 
 @auth_api_router.route("/check_duplicate/<id>", methods=["GET"])
@@ -18,10 +23,24 @@ def check_duplicate(id: str):
         return jsonify({"is_duplicated": True if user else False})
 
     except Exception as e:
+        print(e)
         pass
 
 
-from flask import make_response
+@auth_api_router.route("/modify", methods=["PATCH"])
+@auth_middleware()
+def modify_user():
+    try:
+        data = request.get_json()
+        print(data)
+        modify_req = ModifyUserReq(**data)
+        user = g.current_user
+        UserEntity.updateUser(user_id=user.id, new_nickname=modify_req.nickname, new_password=modify_req.password)
+        return jsonify({"result": "ok"})
+
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "올바르지 않은 요청입니다"}), 400
 
 
 @auth_api_router.route("/sign_in", methods=["POST"])
@@ -73,7 +92,14 @@ def sign_up():
             return jsonify({"error": "별명은 20자를 넘을 수 없습니다."}), 400
         if sign_up_req.password == "" or sign_up_req.nickname == "" or sign_up_req.id == "":
             return jsonify({"error": "잘못된 요청입니다."}), 400
-        DBContainer.user_db.insert_one(sign_up_req.__dict__)
+        insert_data = {
+            "id": sign_up_req.id,
+            "nickname": sign_up_req.nickname,
+            "password": sign_up_req.password,
+            "created_at": datetime.now(),
+            "high_score": HighScoreDict(kr=0, en=0, complex=0)
+        }
+        DBContainer.user_db.insert_one(insert_data)
         return jsonify({
             "data": {
                 "id": sign_up_req.id,
@@ -83,5 +109,3 @@ def sign_up():
     except Exception as e:
         print(e)
         return jsonify({"error": "올바르지 않은 요청입니다"}), 400
-
-

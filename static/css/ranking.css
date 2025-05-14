@@ -1,0 +1,223 @@
+body {
+    font-family: Tahoma, Arial, sans-serif; /* Windows XP uses Tahoma */
+    font-size: 11px; /* Common font size in XP */
+    margin: 0;
+    padding: 20px;
+    background-color: #e0e0e0; /* Generic background for the page */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top if menu is not full height */
+    min-height: 100vh;
+}
+
+.start-menu {
+    width: 400px; /* Approximate width from image */
+    border: 1px solid #003C74;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+    background-color: #F0F0F0; /* Light gray for left panel as base */
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-header {
+    background: linear-gradient(to bottom, #0871E0, #004E9C); /* XP Header gradient */
+    color: white;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #003C74;
+}
+
+.user-icon {
+    width: 40px; /* Adjust size as needed */
+    height: 40px;
+    border: 1px solid white; /* White border like in XP */
+    margin-right: 10px;
+    background-color: #FFD700; /* Placeholder for actual image */
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.menu-content {
+    display: flex;
+    min-height: 400px; /* Adjust based on content */
+}
+
+.left-panel {
+    width: 55%; /* Approximate ratio from image */
+    background-color: #FEFEFE; /* White/Off-white for the left panel */
+    padding: 5px 0;
+    border-right: 1px solid #99B9EAE6; /* Light blue separator */
+}
+
+.left-panel ul, .right-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.left-panel li, .right-panel li {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.left-panel li:hover {
+    background-color: #316AC5; /* XP selection blue */
+    color: white;
+}
+.left-panel li:hover .item-subtitle {
+    color: #E0E0E0; /* Lighter subtitle on hover */
+}
+
+
+.item-icon {
+    width: 32px; /* Standard icon size */
+    height: 32px;
+    margin-right: 8px;
+    background-color: white; /* Placeholder */
+}
+.item-icon-right {
+    width: 20px; /* Smaller icons for right panel */
+    height: 20px;
+    margin-right: 8px;
+    background-color: #ccc; /* Placeholder */
+}
+
+.item-ranking-number {
+    height: 16px;
+    margin-left: 8px;
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.item-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-title {
+    font-weight: bold;
+}
+
+.item-subtitle {
+    font-size: 10px;
+    color: #555;
+}
+
+.left-panel .separator {
+    height: 1px;
+    background-color: #D1D1D1;
+    margin: 5px 10px;
+    padding: 0;
+}
+.left-panel .separator:hover {
+    background-color: #D1D1D1; /* Separator should not change color on hover */
+}
+
+
+.right-panel {
+    width: 45%;
+    background-color: #D4E5F5; /* Light blue for right panel */
+    padding: 5px 0;
+}
+
+.right-panel li:not(:first-child):hover  {
+    background-color: #A8CBEE; /* Slightly darker blue on hover */
+}
+
+.item-title-right {
+    font-size: 11px;
+}
+.right-panel .item-title-right {
+    font-weight: normal; /* XP right panel text is not always bold */
+}
+.right-panel li:hover .item-title-right {
+    color: black; 
+}
+
+
+.right-panel .separator-right {
+    height: 1px;
+    background-color: #99B9EAE6; /* Lighter blue for separator */
+    margin: 5px 0px 5px 30px; /* Indented separator */
+    padding: 0;
+}
+.right-panel .separator-right:hover {
+     background-color: #99B9EAE6; /* Separator should not change color on hover */
+}
+
+.menu-footer {
+    background: linear-gradient(to bottom, #0871E0, #004E9C); /* Same as header */
+    color: white;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #003C74;
+}
+
+.all-programs {
+    cursor: pointer;
+    padding: 5px;
+    font-weight: bold;
+}
+.all-programs:hover {
+    background-color: #003C74; /* Darker blue on hover */
+}
+
+.padding-right-footer {
+    width: 45%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.arrow-icon {
+    color: #66FF66; /* Greenish arrow like in XP */
+    font-size: 10px; /* Smaller arrow */
+    margin-left: 5px;
+    display: inline-block;
+    transform: scaleX(0.8); /* Make it look more like XP arrow */
+}
+
+.system-buttons {
+    display: flex;
+}
+
+.system-buttons button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 5px 8px;
+    margin-left: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 11px;
+}
+
+.system-buttons button:hover {
+    background-color: #003C74; /* Darker blue on hover */
+    border-radius: 3px;
+}
+
+.button-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    background-color: #FF8C00; /* Placeholder - orange for shutdown */
+}
+.log-off .button-icon {
+    background-color: #FFD700; /* Placeholder - yellow for logoff */
+}
+
+.no-hover {
+    cursor: default;
+}

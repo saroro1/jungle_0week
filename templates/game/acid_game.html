@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>산성비 게임 프로토</title>
-    <link rel="stylesheet" href="static/css/acid_game.css">
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/acid_game.css')}}">
 </head>
 <body>
     <div id="game-container">
         <div id="info-panel">
             <span>점수: <span id="score">0</span></span>
             <span>목숨: <span id="lives">3</span></span>
+            <div class="close-btn">✕</div>
             </div>
 
         <div id="game-area">
@@ -19,15 +20,27 @@
         <input type="text" id="word-input" placeholder="단어를 입력하세요" autocomplete="off">
 
         <div id="start-screen" class="overlay">
-            <button id="start-button">게임 시작</button>
+            <button id="start-button">Game Start</button>
         </div>
         <div id="game-over-screen" class="overlay" style="display: none;">
-            <h2>게임 오버!</h2>
-            <p>최종 점수: <span id="final-score">0</span></p>
-            <button id="restart-button">다시 시작</button>
+            <div class="window">
+                <span class = "window-header"></span>
+                <div class = "game-over-content-area">
+                    <h1 class = "game-over-title">게임 오버!</h>
+                    <div > User : <span id="user-nickname"></span></div>
+                    <div> 최종 점수 : <span id="final-score">0</span></div>
+                    <div id = "new-high-score">!내 최고 기록 달성!</div>
+                </div>
+                <div class="game-over-button-area">
+                    <button class="alert-button" id="main-page-button">메인페이지</button>
+                    <button class="alert-button" id="restart-button">다시하기</button>
+                    <button class="alert-button" id="ranking-button">랭킹 보러가기</button>
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <script type="module" src="static/js/acjd_game.js"></script>
+    <script type="module" src="{{url_for('static', filename = 'js/acjd_game.js')}}"></script>
 </body>
 </html>

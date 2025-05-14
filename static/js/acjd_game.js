@@ -274,7 +274,7 @@ import { GameHelper } from "./sdk/game.js";
     async function gameOver() {
         sounds["bgm"].pause();
         sounds["bgm"].currentTime = 0;
-        
+        console.log(gameType)
         if (wordGenerationInterval) {
             clearInterval(wordGenerationInterval);
             wordGenerationInterval = null; 

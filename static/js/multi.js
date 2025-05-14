@@ -1,6 +1,7 @@
 import { SocketClient } from "./sdk/socket.js";
 const gameContainer = document.getElementById('game-container');
 const modalJoinRoom = document.getElementById('modal_JoinRoom');
+const body = document.querySelector("body");
 
 //host modal
 const modalMakeRoom = document.getElementById('modal_MakeRoom');
@@ -417,6 +418,8 @@ function socketConnect() {
         } else {
             modalJoinRoom.style.display = 'none';
         }
+        body.style.backgroundColor = "#ffffff";
+        body.style.backgroundImage = URL("");
         initGame(0, 3);
         startGame(3);
     });

@@ -30,17 +30,17 @@
       <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 생성 중</h2>
 
     <div class="mt-4">
-      <span class="text-black" id="room-link">여기에 서버에서 날라온 게임 코드 있어야함</span>
+      <span class="text-black" id="room-link"></span>
     </div>
 
     <div class="mt-8">
-      <button id="copyButton" class="copy-button">복사하기</button>
+      <button id="copyButton" class="copy-button">생성하기</button>
     </div>
 
     <div class="mt-5">
       <button
         id="MultiStart_Button"
-        class="multistart-button"
+        class="multistart-button hidden"
       >
         게임 시작
       </button>
@@ -54,7 +54,7 @@
       <button
         id="outbutton"
         class="close-btn absolute top-1 right-2"
-        onclick="closeJoinRoomModal()"
+        onclick="window.location.href = '/';"
       >
         X
       </button>
@@ -72,7 +72,6 @@
           <button
             id="join-Button"
             class="join-button"
-            onclick="closeJoinRoomModal()"
           >
             참여하기
           </button>
@@ -93,32 +92,7 @@
 
     <input type="text" id="word-input" placeholder="단어를 입력하세요" autocomplete="off">
 
-    <div id="start-screen" class="overlay" style="display: none;">
-      <button id="start-button">Game Start</button>
-      <div id="countdown"></div>
-    </div>
-    <div id="game-over-screen" class="overlay" style="display: none;">
-      <div class="window">
-        <span class="window-header"></span>
-        <div class="game-over-content-area">
-          <h1 class="game-over-title">게임 오버!</h1>
-          <div> User : <span id="user-nickname"></span></div>
-          <div> 최종 점수 : <span id="final-score">0</span></div>
-          <div id="new-high-score">!내 최고 기록 달성!</div>
-        </div>
-        <div class="game-over-button-area"></div>
-          <button class="alert-button" id="main-page-button">메인페이지</button>
-          <button class="alert-button" id="restart-button">다시하기</button>
-          <button class="alert-button" id="ranking-button">랭킹 보러가기</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script type="module" src="{{url_for('static', filename = 'js/multi.js')}}"></script>
-    <script  src="{{url_for('static', filename = 'js/main.js')}}"></script>
         <div id="start-screen" class="overlay" stype="display: none">
-            <button id="start-button">Game Start</button>
             <div id="countdown"></div>
         </div>
         <div id="game-over-screen" class="overlay" style="display: none">

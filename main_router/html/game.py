@@ -1,9 +1,13 @@
+from typing import TYPE_CHECKING
 from flask import Blueprint, render_template, Response, url_for, make_response, redirect, request, g
 import math
 
 from constant import word_type
 from middleware import auth_middleware
 from type.database.user_entity import UserEntity
+
+if TYPE_CHECKING:
+    g.current_user: UserEntity
 
 game_route = Blueprint("game", __name__, url_prefix="/game")
 '''
@@ -106,4 +110,5 @@ def game_play_page(gametype : str):
 @game_route.route("/mypage", endpoint="mypage")
 @auth_middleware(use_redirect=True)
 def game_my_page():
+    g.current_user
     return render_template("./mypage.html")

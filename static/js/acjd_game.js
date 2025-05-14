@@ -15,11 +15,11 @@ const restartButton = document.getElementById('restart-button');
 const goToRankButton = document.getElementById('ranking-button');
 //음악
 const sounds = {
-    "bgm": new Audio("static/asset/music/bgm.mp3"),
-    "hitPath" : "static/asset/music/hit2.m4a",
-    "failPath": "static/asset/music/fail.m4a",
-    "gameOver": new Audio("static/asset/music/game_over.mp3"),
-    "crashPath": "static/asset/music/crash.m4a"
+    "bgm": new Audio("/static/asset/music/bgm.mp3"),
+    "hitPath" : "/static/asset/music/hit2.m4a",
+    "failPath": "/static/asset/music/fail.m4a",
+    "gameOver": new Audio("/static/asset/music/game_over.mp3"),
+    "crashPath": "/static/asset/music/crash.m4a"
 }
 sounds["bgm"].loop = true;
 sounds["bgm"].volume = 0.3
@@ -257,7 +257,7 @@ async function gameOver() {
 
 // 단어 생성 함수 -> 서버에서 보내주면 셔플
 function generateWord() {
-    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,20+difficalty * speedConst);
+    const newWord = new ActiveWord(wordList[index].word,wordList[index].type,200+difficalty * speedConst);
     index++;
     activeWords.push(newWord);
 

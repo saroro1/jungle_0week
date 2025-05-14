@@ -115,7 +115,6 @@ body {
 .game-over-content-area {
     padding: 15px;
     background-color: #ECE9D8; /* XP 대화상자 배경색 */
-    border-bottom: 1px solid #ACA899; /* 하단 구분선 */
     color: black;
 }
 
@@ -126,17 +125,20 @@ body {
 }
 
 .game-over-button-area {
-    padding: 10px 15px;
-    text-align: right;
+    border-top: 1px solid #ACA899; /* 상단 구분선 */
     background-color: #ECE9D8; /* XP 대화상자 배경색 */
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex-direction: row;
 }
 
-.alert-button {
+button.alert-button {
     min-width: 80px;
     padding: 4px 12px;
-    margin-left: 6px;
-    font-family: "굴림", Gulim, Tahoma, sans-serif;
-    font-size: 9pt;
+    margin: 10px 12px 10px 0px;
+    font-family: '굴림';
+    font-size: 0.8em;
     color: #000000;
     background-color: #F0F0F0;
     border: 1px solid #000000; /* 기본 검정 테두리 */

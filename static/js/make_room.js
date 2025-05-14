@@ -453,6 +453,7 @@ startGame2.addEventListener("click",()=>{
     });
 });
 copyBtn.addEventListener("click", ()=>{
+    console.log("copy on");
     navigator.clipboard.writeText(printLink.textContent);
 })
 socketConnect();

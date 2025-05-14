@@ -6,6 +6,7 @@ from dataclasses import dataclass, field, asdict
 from functools import wraps
 import random
 DEFAULT_WORD_GENERATION_INTERVAL = 2.0
+DEFAULT_SPEED_RATIO = 8
 
 from constant import eng_word, kor_word
 from utils.jwt import Jwt
@@ -258,8 +259,8 @@ def game_loop_for_room(room_id: str):
                 continue
 
             word_text, word_type = word_data
-            speed = 50 + (current_room_state.difficulty * 13)
-            score = 10 + (current_room_state.difficulty * 2)
+            speed = 50 + (current_room_state.difficulty * DEFAULT_SPEED_RATIO)
+            score = 10 + (current_room_state.difficulty * 3)
 
             new_word = GameWord(word=word_text, type=word_type, speed=speed, score=score)
             current_room_state.word_list.append(new_word)

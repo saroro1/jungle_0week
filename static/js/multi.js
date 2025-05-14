@@ -310,51 +310,51 @@ function resetGameDisplay() {
     sounds["gameOver"].currentTime = 0;
 }
 
-//퍼즈 함수
-function pause() {
-    sounds["bgm"].pause();
-    if (!isPaused) {
+// //퍼즈 함수
+// function pause() {
+//     sounds["bgm"].pause();
+//     if (!isPaused) {
 
-        // 애니메이션 프레임 중단
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        }
-        isPaused = true;
-        console.log("애니메이션이 일시 정지되었습니다.");
-    } else {
-        console.log("애니메이션은 이미 일시 정지된 상태입니다.");
-    }
-}
+//         // 애니메이션 프레임 중단
+//         if (animationFrameId) {
+//             cancelAnimationFrame(animationFrameId);
+//             animationFrameId = null;
+//         }
+//         isPaused = true;
+//         console.log("애니메이션이 일시 정지되었습니다.");
+//     } else {
+//         console.log("애니메이션은 이미 일시 정지된 상태입니다.");
+//     }
+// }
 
-function resume() {
-    sounds["bgm"].play();
-    if (isPaused) {
+// function resume() {
+//     sounds["bgm"].play();
+//     if (isPaused) {
 
-        // 애니메이션 프레임 재개
-        if (!animationFrameId) {
-            lastTime = performance.now(); // 재개 시점 기준으로 lastTime 초기화
-            animationFrameId = requestAnimationFrame(gameLoop);
-        }
-        isPaused = false;
-        wordInput.focus();
-    } else {
-    }
-}
+//         // 애니메이션 프레임 재개
+//         if (!animationFrameId) {
+//             lastTime = performance.now(); // 재개 시점 기준으로 lastTime 초기화
+//             animationFrameId = requestAnimationFrame(gameLoop);
+//         }
+//         isPaused = false;
+//         wordInput.focus();
+//     } else {
+//     }
+// }
 
-document.addEventListener("visibilitychange", function () {
-    //게임 종료시는 작동 안함.
-    if (gameEnd) {
-        return;
-    }
-    if (document.hidden) {
-        // 사용자가 창을 벗어났을 때 실행할 코드
-        pause();
-    } else {
-        // 사용자가 다시 창으로 돌아왔을 때 실행할 코드
-        resume();
-    }
-});
+// document.addEventListener("visibilitychange", function () {
+//     //게임 종료시는 작동 안함.
+//     if (gameEnd) {
+//         return;
+//     }
+//     if (document.hidden) {
+//         // 사용자가 창을 벗어났을 때 실행할 코드
+//         pause();
+//     } else {
+//         // 사용자가 다시 창으로 돌아왔을 때 실행할 코드
+//         resume();
+//     }
+// });
 
 
 // 이벤트 리스너 설정
@@ -418,8 +418,9 @@ function socketConnect() {
         } else {
             modalJoinRoom.style.display = 'none';
         }
-        body.style.backgroundColor = "#ffffff";
-        body.style.backgroundImage = URL("");
+
+        body.classList.add("noimage");
+        body.style.backgroundColor = "#000000";
         initGame(0, 3);
         startGame(3);
     });
@@ -484,7 +485,8 @@ function joinRoom(link) {
 
 copyButton.addEventListener('click', () => {
     if (roomCreated) {
-        navigator.clipboard.writeText(roomLink.textContent);
+        console.log("복사하기");
+        window.navigator.clipboard.writeText(roomLink.textContent);
     } else {
         makeRoom();
         copyButton.textContent = "복사하기"

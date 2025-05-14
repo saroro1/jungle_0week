@@ -32,12 +32,7 @@ def check_duplicate(id: str):
 def modify_user():
     try:
         data = request.get_json()
-        print(data)
         modify_req = ModifyUserReq(**data)
-        if modify_req.nickname is not None and len(modify_req.nickname) == 0:
-            return jsonify({"error": "올바르지 않은 요청입니다"}), 400
-        if modify_req.password is not None and len(modify_req.password) == 0:
-            return jsonify({"error": "올바르지 않은 요청입니다"}), 400
         user = g.current_user
         UserEntity.updateUser(user_id=user.id, new_nickname=modify_req.nickname, new_password=modify_req.password)
         return jsonify({"result": "ok"})

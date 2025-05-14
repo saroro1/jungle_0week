@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SQUALL - SIGN IN</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="/static/js/sdk/auth.js"></script>
+    <script type="module" defer src="/static/js/login.js"></script>
     <link rel="stylesheet" href="{{url_for('static', filename = 'css/font.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename = 'css/xp_style.css')}}" />
 
@@ -77,27 +77,5 @@
       </div>
     </div>
 
-    <script>
-
-        document.getElementById("sign_in_btn")?.addEventListener("click", async function (e){
-            const formDiv = document.getElementById("login_form")
-            const formData = new FormData(formDiv);
-            const id = formData.get("user_id");
-            const password = formData.get("password");
-
-            if (!this.reportValidity()) {
-              e.preventDefault();
-              return;
-            }
-            e.preventDefault();
-            const res = await AuthHelper.sign_in(id, password)
-            if(res.error){
-                alert(res.error)
-            }
-            else{
-                window.location.replace("{{ url_for('page_main') }}");
-            }
-        })
-    </script>
   </body>
 </html>

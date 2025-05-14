@@ -126,3 +126,58 @@ body {
 .join_room-button:hover {
   background-color: #db3d0d;
 }
+
+
+.copy-button {
+  background-color: #223bc5;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin-right: 1.5rem;
+  font-size: 1rem;
+  width: 7rem;
+  height: 7rem;
+  box-sizing: border-box;
+  border: 0.7px solid black;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.copy-button:hover {
+  background-color: #2225c5;
+}
+
+.multistart-button {
+  background-color: #ff3c00;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  width: 7rem;
+  height: 7rem;
+  box-sizing: border-box;
+  border: 0.7px solid black;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.multistart-button:hover {
+  background-color: #db3d0d;
+}
+.join-button {
+  background-color: #ff3c00;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  width: 7rem;
+  height: 7rem;
+  box-sizing: border-box;
+  border: 0.7px solid black;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.join-button:hover {
+  background-color: #db3d0d;
+}

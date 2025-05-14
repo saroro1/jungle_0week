@@ -19,6 +19,29 @@ function closeMultiModal() {
   document.getElementById("modal_multi").style.display = "none";
 }
 
+function openMakeRoomModal() {
+
+  closeMultiModal();
+  
+  document.getElementById("modal_MakeRoom").style.display = "block";
+}
+
+function closeMakeRoomModal() {
+  document.getElementById("modal_MakeRoom").style.display = "none";
+}
+
+function openJoinRoomModal() {
+
+  closeMultiModal();
+  
+  document.getElementById("modal_JoinRoom").style.display = "block";
+}
+
+function closeJoinRoomModal() {
+  document.getElementById("modal_JoinRoom").style.display = "none";
+}
+
+
 function updateStartAndRankingButtons() {
   const selectBox = document.getElementById("modeSelectDropdown");
   const rankingButton = document.getElementById("rankingButton");

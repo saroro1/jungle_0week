@@ -74,8 +74,8 @@ body {
 }
 
 .multi-button {
-  background-color: #ff0000;
-  color: white;
+  background-color: #fffb00;
+  color: black;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 1.5rem;
@@ -88,7 +88,7 @@ body {
 }
 
 .multi-button:hover {
-  background-color: #ff3c00;
+  background-color: #ebe714;
 }
 .make_room-button {
   background-color: #223bc5;
@@ -136,7 +136,7 @@ body {
   margin-right: 1.5rem;
   font-size: 1rem;
   width: 7rem;
-  height: 7rem;
+  height: 3rem;
   box-sizing: border-box;
   border: 0.7px solid black;
   transition: background-color 0.3s;
@@ -148,30 +148,30 @@ body {
 }
 
 .multistart-button {
-  background-color: #ff3c00;
-  color: white;
+  background-color: #fffb00;
+  color: black;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 1rem;
   width: 7rem;
   height: 7rem;
   box-sizing: border-box;
-  border: 0.7px solid black;
+  border: 0.7px solid white;
   transition: background-color 0.3s;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
 .multistart-button:hover {
-  background-color: #db3d0d;
+  background-color: #ebe714;
 }
 .join-button {
-  background-color: #ff3c00;
+  background-color: #02db1f;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-size: 1rem;
   width: 7rem;
-  height: 7rem;
+  height: 3rem;
   box-sizing: border-box;
   border: 0.7px solid black;
   transition: background-color 0.3s;
@@ -179,5 +179,5 @@ body {
 }
 
 .join-button:hover {
-  background-color: #db3d0d;
+  background-color: #00b618;
 }

@@ -180,3 +180,11 @@ body {
 .join-button:hover {
   background-color: #00b618;
 }
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: inline-block;
+}

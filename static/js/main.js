@@ -65,15 +65,9 @@ function updateStartAndRankingButtons() {
 
 document.addEventListener("DOMContentLoaded", function () {
   // 이벤트 연결
-  document
-    .getElementById("startButton")
-    .addEventListener("click", openModeModal);
-  document
-    .getElementById("closeButton")
-    .addEventListener("click", closeModeModal);
-  document
-    .getElementById("battlemodeButton")
-    .addEventListener("click", openMultiModal);
+  document.getElementById("startButton").addEventListener("click", openModeModal);
+  document.getElementById("closeButton").addEventListener("click", closeModeModal);
+  // document.getElementById("battlemodeButton").addEventListener("click", openMultiModal);
 
   // 멀티모드 닫기 버튼은 ID가 중복되지 않게 따로 줘야 함!
   const closeMultiBtn = document.querySelector("#modal_multi .close-btn");

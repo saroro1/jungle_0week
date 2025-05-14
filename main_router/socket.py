@@ -17,6 +17,7 @@ socketio = SocketIO()
 MIN_WORD_GENERATION_INTERVAL = 0.6 # 최소 단어 생성 간격 (초)
 MAX_VALID_HIT_DURATION = 14.0  # 단어 생성 후 유효한 hit으로 인정되는 최대 시간 (초)
 MAX_LIVES = 5 # 최대 생명력
+AUTO_MISS_TIMEOUT = 16.0 # 이 시간(초) 동안 플레이어가 단어를 처리하지 않으면 자동으로 miss 처리
 
 # --- 임시 단어 목록 제거 ---
 # ENG_WORDS_PLACEHOLDER = [...] # 이 줄과 아래 KOR_WORDS_PLACEHOLDER 줄을 삭제합니다.
@@ -32,6 +33,7 @@ class GameWord:
     score: int
     uuid: str = field(default_factory=lambda: str(uuid.uuid4()))
     created_at: float = field(default_factory=time.time)
+    processed_by: set[str] = field(default_factory=set) # 이 단어를 처리한 user_id 집합
 
 @dataclass
 class GameUser:
@@ -56,6 +58,7 @@ class GameRoom: # 제공된 스니펫의 클래스 이름(GameRoom)을 사용 (�
     word_generation_interval: float = 2.0
     difficulty: int = 0
     clients: set[str] = field(default_factory=set)
+    shot_word_count: int = 0 # 발사된 단어 수 카운터 (난이도 조절용)
 
 # --- 전역 상태 관리 ---
 # rooms 딕셔너리의 타입 어노테이션도 GameRoom을 사용하도록 변경
@@ -176,64 +179,158 @@ def game_loop_for_room(room_id: str):
         if room : room.game_started = False
         return
     
-    # 게임 루프 시작 시 초기 생성 간격 설정 (GameRoom의 기본값 사용)
     current_generation_interval = room.word_generation_interval
 
     while room_id in rooms and room.game_started:
-        current_room_state = rooms.get(room_id)
+        current_time_in_loop = time.time()
+        current_room_state = rooms.get(room_id) # 루프 반복마다 최신 방 상태 가져오기
+
         if not current_room_state or not current_room_state.game_started:
             print(f"[GameLoop] Room {room_id} no longer exists or game stopped. Exiting loop.")
             break
         
-        if not (current_room_state.host_user and current_room_state.host_user.sid in game_users and current_room_state.host_user.sid in current_room_state.clients and \
-                current_room_state.user_guest and current_room_state.user_guest.sid in game_users and current_room_state.user_guest.sid in current_room_state.clients):
-            print(f"[GameLoop] A player seems to have disconnected in room {room_id}. Stopping game.")
-            current_room_state.game_started = False
+        # 플레이어 연결 상태 확인 (기존 로직 유지)
+        host_user = current_room_state.host_user
+        guest_user = current_room_state.user_guest
+        active_players_sids = {p.sid for p in [host_user, guest_user] if p and p.sid in game_users and p.sid in current_room_state.clients}
+        
+        if len(active_players_sids) < 2: # 한 명이라도 나갔거나 연결이 유효하지 않으면 게임 중단
+            print(f"[GameLoop] A player seems to have disconnected or is invalid in room {room_id}. Stopping game.")
+            current_room_state.game_started = False # 게임 중단 플래그
+            # 게임 종료 처리는 disconnect 핸들러나 다른 곳에서 할 수 있도록 여기서는 루프만 탈출
             break
 
-        word_data = get_single_random_word(current_room_state.game_type)
-        if not word_data:
-            print(f"[GameLoop] Could not get word for room {room_id}. Retrying after interval.")
-            socketio.sleep(current_generation_interval)
-            continue
+        # --- 자동 Miss 처리 및 단어 정리 로직 ---
+        words_to_remove_indices = []
+        if host_user and guest_user : # 두 플레이어가 모두 있어야 자동 miss 처리 의미 있음
+            for i, word_obj in enumerate(current_room_state.word_list):
+                # 자동 Miss 처리: 단어가 너무 오래되었고 아직 특정 플레이어가 처리하지 않은 경우
+                if current_time_in_loop - word_obj.created_at > AUTO_MISS_TIMEOUT:
+                    players_in_room = {host_user.user_id, guest_user.user_id}
+                    unprocessed_by_players = players_in_room - word_obj.processed_by
+                    
+                    for player_user_id_to_penalize in unprocessed_by_players:
+                        player_to_penalize = None
+                        if host_user.user_id == player_user_id_to_penalize:
+                            player_to_penalize = host_user
+                        elif guest_user.user_id == player_user_id_to_penalize:
+                            player_to_penalize = guest_user
+                        
+                        if player_to_penalize and player_to_penalize.sid in game_users: # 플레이어가 여전히 유효한 경우
+                            player_to_penalize.life -= 1
+                            word_obj.processed_by.add(player_user_id_to_penalize) # 자동 miss 처리됨으로 기록
+                            print(f"[GameLoop-AutoMiss] User {player_user_id_to_penalize} auto-missed word {word_obj.uuid} in room {room_id}. Life: {player_to_penalize.life}")
 
-        word_text, word_type = word_data
-        speed = 50 + (current_room_state.difficulty * 5)
-        score = 10 + (current_room_state.difficulty * 2)
+                            emit('life_change', {
+                                'user_id': player_to_penalize.user_id,
+                                'new_life': player_to_penalize.life,
+                                'life_delta': -1,
+                                'reason': 'auto_miss_timeout',
+                                'word_uuid': word_obj.uuid # 어떤 단어가 자동 미스되었는지 정보 추가
+                            }, room=player_to_penalize.sid)
 
-        new_word = GameWord(word=word_text, type=word_type, speed=speed, score=score)
-        current_room_state.word_list.append(new_word)
-        current_room_state.last_word_shoot_time = time.time()
+                            opponent = _get_opponent(current_room_state, player_to_penalize)
+                            if opponent and opponent.sid in game_users:
+                                emit('opponents_life_change', {
+                                    'opponent_user_id': player_to_penalize.user_id,
+                                    'new_life': player_to_penalize.life,
+                                    'life_delta': -1,
+                                    'reason': 'opponent_auto_miss_timeout',
+                                    'word_uuid': word_obj.uuid
+                                }, room=opponent.sid)
+                            
+                            if player_to_penalize.life <= 0 and not current_room_state.game_ended:
+                                _handle_game_over(current_room_state, player_to_penalize)
+                                break # 게임 종료되면 더 이상 단어 처리 불필요
+                    
+                    if current_room_state.game_ended: break # 게임 종료 시 외부 루프도 탈출
 
-        print(f"[GameLoop] Room {room_id} shooting word: {asdict(new_word)}")
-        socketio.emit('shoot_word', asdict(new_word), to=room_id)
+                # 단어 제거 조건: 모든 활성 플레이어가 단어를 처리했거나, 자동 miss 처리로 인해 모든 플레이어가 처리된 상태가 된 경우
+                # 또는 단어가 너무 오래되어서 (AUTO_MISS_TIMEOUT 이상) 더 이상 상호작용할 필요가 없을 때
+                # (이 부분은 위에서 처리했으므로, 여기서는 모든 플레이어가 처리했는지 여부만 체크)
+                num_active_players = 0
+                if host_user and host_user.user_id: num_active_players +=1
+                if guest_user and guest_user.user_id: num_active_players +=1
+                
+                # 실제 게임에 참여 중인 플레이어 (user_id가 있는) 수로 판단
+                # 단, 게임 시작 시점에 두 플레이어가 모두 존재했어야 함.
+                # current_room_state.clients 에는 sid가 들어있고, game_users[sid].user_id로 실제 참여 유저 확인 가능.
+                # 좀 더 정확하게는 게임 시작 시점의 플레이어들을 기준으로 해야 함.
+                # 여기서는 간편하게 host_user와 user_guest가 모두 유효한 user_id를 가질 때 2명으로 가정.
+                # 만약 한쪽이 나갔다면, 남은 한명이 처리하면 삭제될 수 있도록 해야 할 수도 있음.
+                # 현재는 두명 모두 존재하고, 두명 모두 처리해야 삭제되도록 함.
+                expected_processors = 0
+                if current_room_state.host_user and current_room_state.host_user.user_id: expected_processors +=1
+                if current_room_state.user_guest and current_room_state.user_guest.user_id: expected_processors +=1
+                
+                # 안전하게, 현재 방에 있는 클라이언트 수(최대 2)를 기준으로 할 수도 있으나,
+                # 게임 시작 시 확정된 플레이어 기준으로 하는 것이 더 정확. 여기서는 GameRoom의 host_user, user_guest 사용
+                if expected_processors > 0 and len(word_obj.processed_by) >= expected_processors:
+                    if i not in words_to_remove_indices:
+                         words_to_remove_indices.append(i)
+                elif current_time_in_loop - word_obj.created_at > AUTO_MISS_TIMEOUT + 2.0 : # 혹시 모든 유저가 처리 안했어도 너무 오래되면 강제 삭제 (2초 여유)
+                    if i not in words_to_remove_indices:
+                         words_to_remove_indices.append(i)
 
-        # 10개 단어마다 난이도 증가 (단, 0번째는 제외하고 첫 10개부터)
-        if len(current_room_state.word_list) > 0 and len(current_room_state.word_list) % 10 == 0:
-            current_room_state.difficulty += 1
-            print(f"[GameLoop] Room {room_id} difficulty increased to {current_room_state.difficulty}")
-            
-            # 난이도 증가 시 단어 생성 간격도 줄이기
-            # 초기 간격(GameRoom.word_generation_interval)에서 점차 감소
-            base_interval = GameRoom.model_fields['word_generation_interval'].default # dataclass의 기본값 가져오기
-            # 또는 room 객체가 생성될 때의 초기값을 별도로 저장해두고 사용
-            # 여기서는 GameRoom의 초기 설정값을 기준으로 함
-            difficulty_reduction = current_room_state.difficulty * 0.1 # 난이도 레벨당 0.1초씩 감소폭 증가
-            new_interval = base_interval - difficulty_reduction
-            
-            current_generation_interval = max(MIN_WORD_GENERATION_INTERVAL, new_interval)
-            # current_room_state.word_generation_interval = current_generation_interval # GameRoom 객체에 저장할 필요는 없음. 루프 변수로 관리
-            
-            print(f"[GameLoop] Room {room_id} word generation interval updated to {current_generation_interval:.2f}s (Difficulty: {current_room_state.difficulty})")
-            
-            socketio.emit('difficulty_update', 
-                            {'difficulty': current_room_state.difficulty, 
-                             'new_interval': current_generation_interval,
-                             'current_speed_modifier': current_room_state.difficulty * 5 # 예시로 속도 증가분도 전달
-                             }, 
-                            to=room_id)
 
-        socketio.sleep(current_generation_interval) # 다음 단어까지 대기
+            if current_room_state.game_ended: break # 게임 종료 시 단어 정리 중단 및 루프 탈출
+
+            # 뒤에서부터 제거해야 인덱스 문제 없음
+            for index_to_remove in sorted(words_to_remove_indices, reverse=True):
+                removed_word_for_log = current_room_state.word_list[index_to_remove]
+                del current_room_state.word_list[index_to_remove]
+                print(f"[GameLoop-Cleanup] Word {removed_word_for_log.uuid} removed from room {room_id}.")
+
+        # --- 단어 생성 로직 (기존 로직 일부 수정) ---
+        # last_word_shoot_time은 루프 시작시의 시간이 아닌, 실제 단어 발사 시간 기준으로 업데이트 되어야 함.
+        # 현재 current_room_state.last_word_shoot_time을 사용하고 있으므로, 이 부분은 그대로 유지.
+        if current_time_in_loop - current_room_state.last_word_shoot_time >= current_generation_interval:
+            word_data = get_single_random_word(current_room_state.game_type)
+            if not word_data:
+                print(f"[GameLoop] Could not get word for room {room_id}. Retrying after interval.")
+                socketio.sleep(0.1) # 짧게 대기 후 다음 루프에서 재시도
+                continue
+
+            word_text, word_type = word_data
+            # 난이도에 따른 속도와 점수는 여기서 결정
+            speed = 50 + (current_room_state.difficulty * 8) # 난이도 강화 (기존 * 5 에서 * 8 로)
+            score = 10 + (current_room_state.difficulty * 2) # 점수는 기존 유지 또는 필요시 조정
+
+            new_word = GameWord(word=word_text, type=word_type, speed=speed, score=score)
+            current_room_state.word_list.append(new_word)
+            current_room_state.last_word_shoot_time = time.time() # 실제 단어 발사 시간으로 업데이트
+            current_room_state.shot_word_count += 1 # 발사된 단어 수 증가 (난이도 조절용)
+
+            print(f"[GameLoop] Room {room_id} shooting word: {asdict(new_word)} (Total shot: {current_room_state.shot_word_count})")
+            socketio.emit('shoot_word', asdict(new_word), to=room_id)
+
+            # 난이도 증가 로직 (7단어마다, speed 및 생성 주기 강화)
+            if current_room_state.shot_word_count > 0 and current_room_state.shot_word_count % 7 == 0:
+                current_room_state.difficulty += 1
+                print(f"[GameLoop] Room {room_id} difficulty increased to {current_room_state.difficulty}")
+                
+                # 단어 생성 간격 업데이트
+                base_interval = GameRoom.model_fields['word_generation_interval'].default 
+                difficulty_reduction = current_room_state.difficulty * 0.15 # 감소폭 증가
+                new_interval = base_interval - difficulty_reduction
+                current_generation_interval = max(MIN_WORD_GENERATION_INTERVAL, new_interval)
+                
+                # 현재 단어 속도 계산 (난이도 반영, GameWord 생성 시 사용되는 값과 일치하도록)
+                # 이 값은 difficulty_update 이벤트에 참고용으로만 포함됩니다.
+                # 실제 단어의 속도는 GameWord 객체 생성 시 결정됩니다.
+                current_speed_for_info = 50 + (current_room_state.difficulty * 8) # Speed 계산식 변경
+                
+                print(f"[GameLoop] Room {room_id} word generation interval updated to {current_generation_interval:.2f}s, Speed base updated for info to {current_speed_for_info} (Difficulty: {current_room_state.difficulty})")
+                
+                socketio.emit('difficulty_update', 
+                                {'difficulty': current_room_state.difficulty, 
+                                 'new_interval': current_generation_interval,
+                                 'current_speed_modifier_info': current_speed_for_info # 정보성으로 현재 난이도 기준 속도 전달
+                                 }, 
+                                to=room_id)
+        
+        # 루프 주기 (짧게 유지하여 반응성 높임)
+        socketio.sleep(0.1) # 0.1초마다 루프 반복 (단어 생성은 current_generation_interval에 따름)
 
     print(f"[GameLoop] Ended for room {room_id}.")
 
@@ -549,15 +646,18 @@ def handle_hit(data):
     for i, game_word in enumerate(target_room.word_list):
         if game_word.uuid == word_uuid:
             hit_word_object = game_word
-            word_index_to_remove = i
             break
     
-    if word_index_to_remove != -1:
-        del target_room.word_list[word_index_to_remove] # 단어 리스트에서 즉시 제거
-    else:
+    if not hit_word_object:
         # 이미 처리되었거나 존재하지 않는 단어
         print(f"[Hit] User {user.user_id} (sid: {sid}) tried to hit non-existent/already-processed word UUID: {word_uuid} in room {target_room.room_id}")
-        emit('hit_failed', {'message': '단어를 찾을 수 없거나 이미 처리되었습니다.', 'uuid': word_uuid}, room=sid)
+        emit('hit_failed', {'message': '단어를 찾을 수 없거나 이미 다른 플레이어가 처리했습니다.', 'uuid': word_uuid}, room=sid)
+        return
+
+    # 이미 현재 유저가 처리한 단어인지 확인
+    if user.user_id in hit_word_object.processed_by:
+        print(f"[Hit-Duplicate] User {user.user_id} (sid: {sid}) tried to hit already processed word UUID: {word_uuid} by them in room {target_room.room_id}")
+        emit('hit_failed', {'message': '이미 처리한 단어입니다.', 'uuid': word_uuid}, room=sid)
         return
 
     # 시간 검증 (부정행위 감지)
@@ -591,6 +691,8 @@ def handle_hit(data):
     # 정상적인 Hit 처리
     print(f"[Hit-Success] User {user.user_id} (sid: {sid}) hit word: {hit_word_object.word} in room {target_room.room_id}")
     
+    hit_word_object.processed_by.add(user.user_id) # 이 유저가 단어를 처리했음을 표시
+
     score_delta = hit_word_object.score
     user.score += score_delta
     user.count += 1
@@ -671,18 +773,22 @@ def handle_miss(data):
     for i, game_word in enumerate(target_room.word_list):
         if game_word.uuid == word_uuid:
             missed_word_object = game_word
-            word_index_to_remove = i
             break
     
-    if word_index_to_remove != -1:
-        del target_room.word_list[word_index_to_remove] 
-    else:
+    if not missed_word_object:
         print(f"[Miss] User {user.user_id} (sid: {sid}) tried to miss non-existent/already-processed word UUID: {word_uuid} in room {target_room.room_id}")
-        emit('miss_failed', {'message': '단어를 찾을 수 없거나 이미 처리되었습니다.', 'uuid': word_uuid}, room=sid)
+        emit('miss_failed', {'message': '단어를 찾을 수 없거나 이미 다른 플레이어가 처리했습니다.', 'uuid': word_uuid}, room=sid)
+        return
+
+    # 이미 현재 유저가 처리한 단어인지 확인 (miss의 경우 이론적으로는 발생하기 어려우나 방어적으로 추가)
+    if user.user_id in missed_word_object.processed_by:
+        print(f"[Miss-Duplicate] User {user.user_id} (sid: {sid}) tried to miss already processed word UUID: {word_uuid} by them in room {target_room.room_id}")
+        emit('miss_failed', {'message': '이미 처리한 단어입니다.', 'uuid': word_uuid}, room=sid) # 또는 다른 적절한 메시지
         return
 
     print(f"[Miss-Reported] User {user.user_id} (sid: {sid}) reported miss for word: {missed_word_object.word} (UUID: {word_uuid}) in room {target_room.room_id}")
     
+    missed_word_object.processed_by.add(user.user_id) # 이 유저가 단어를 처리했음을 표시
     user.life -= 1
     life_delta_on_miss = -1
 
@@ -765,7 +871,7 @@ def handle_start_game(data=None):
                 'room_id': current_room.room_id,
                 'message': '게임 시작!',
                 'initial_difficulty': current_room.difficulty,
-                'initial_speed': 50 + (current_room.difficulty * 5),
+                'initial_speed': 50 + (current_room.difficulty * 8),
                 'initial_word_generation_interval': current_room.word_generation_interval,
                 'host': asdict(current_room.host_user) if current_room.host_user else None,
                 'guest': asdict(current_room.user_guest) if current_room.user_guest else None,

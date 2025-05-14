@@ -94,7 +94,6 @@ def set_highscore():
             print(f"Critical: User {user_id} identified by auth_middleware, but not found in DB for highscore check.")
             return jsonify({"error": "사용자 정보를 찾는 데 문제가 발생했습니다."}), 500
 
-
         is_new_score_a_highscore = (requested_score > g.current_user.high_score.get(score_type))
 
         my_ranking_info = UserEntity.getMyRanking(user_id=user_id)
@@ -103,6 +102,7 @@ def set_highscore():
             my_ranking = my_ranking_info[score_type]
 
         response_data = {
+            "nickname" : user_doc_for_score.nickname,
             "is_highscore": is_new_score_a_highscore,
             "my_ranking": my_ranking,
             "word_type": score_type

@@ -85,6 +85,7 @@ export class GameHelper {
 
   /**
    * @typedef {object} HighscoreResponse
+   * @property {string} nickname - 닉네임
    * @property {boolean} is_highscore - 현재 점수가 최고 기록인지 여부
    * @property {number} my_ranking - 업데이트 후 사용자의 해당 타입 랭킹 (-1인 경우 랭크되지 않음)
    * @property {string} word_type - 점수가 기록된 단어 타입 ("kr", "en", "complex")

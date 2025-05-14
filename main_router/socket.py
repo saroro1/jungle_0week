@@ -355,18 +355,18 @@ def handle_create_room(data):
     # 1. 데이터가 JSON 객체(dict)인지 확인
     if not isinstance(data, dict):
         print(f"[CreateRoom] Failed for user {user.user_id} (sid: {sid}): Invalid data format. Expected JSON object, got {type(data)}.")
-        emit('create_room_failed', {'message': '잘못된 요청 형식입니다. 데이터는 JSON 객체여야 합니다.'}, room=sid)
+        emit('room_failed', {'message': '잘못된 요청 형식입니다. 데이터는 JSON 객체여야 합니다.'}, room=sid)
         return
 
     # 2. 사용자가 이미 방에 있는지 확인 (기존 로직 유지)
     if user.room_id:
         # 이 메시지는 이미 적절하게 설정되어 있는 것 같습니다.
-        emit('create_room_failed', {'message': '이미 방에 참여중입니다. 먼저 현재 방을 나간 후 시도해주세요.'}, room=sid)
+        emit('room_failed', {'message': '이미 방에 참여중입니다. 먼저 현재 방을 나간 후 시도해주세요.'}, room=sid)
         return
 
     game_type = data.get('game_type')
     if not game_type:
-        emit('create_room_failed', {'message': '방을 생성하려면 game_type이 필요합니다.'}, room=sid)
+        emit('room_failed', {'message': '방을 생성하려면 game_type이 필요합니다.'}, room=sid)
         return
 
     room_id = str(uuid.uuid4()) # 방 ID (키) 생성
@@ -398,11 +398,11 @@ def handle_join_room(data):
 
     if not isinstance(data, dict):
         print(f"[JoinRoom] Failed for user {user.user_id} (sid: {sid}): Invalid data format. Expected JSON object, got {type(data)}.")
-        emit('join_room_failed', {'message': '잘못된 요청 형식입니다. 데이터는 JSON 객체여야 합니다.'}, room=sid)
+        emit('joined_failed', {'message': '잘못된 요청 형식입니다. 데이터는 JSON 객체여야 합니다.'}, room=sid)
         return
 
     if user.room_id:
-        emit('join_room_failed', {'message': '이미 방에 참여중입니다. 먼저 현재 방을 나간 후 시도해주세요.'}, room=sid)
+        emit('joined_failed', {'message': '이미 방에 참여중입니다. 먼저 현재 방을 나간 후 시도해주세요.'}, room=sid)
         return
 
     room_id_to_join = data.get('id') # 클라이언트에서는 room_id로 보낼 수 있으나, 서버에서는 'id'로 받고 있었으므로 유지 또는 확인 필요.
@@ -410,11 +410,11 @@ def handle_join_room(data):
                                      # 따라서 data.get('room_id') 가 더 적절해 보임. 우선은 'id' 유지 후 필요시 수정.
     if not room_id_to_join:
         # 위 주석에 따라, 클라이언트가 'room_id'로 보낸다면 여기도 'room_id is required'가 되어야 함.
-        emit('join_room_failed', {'message': '방 ID(id)가 필요합니다.'}, room=sid) 
+        emit('joined_failed', {'message': '방 ID(id)가 필요합니다.'}, room=sid) 
         return
 
     if room_id_to_join not in rooms:
-        emit('join_room_failed', {'message': f'방 "{room_id_to_join}"을(를) 찾을 수 없습니다.'}, room=sid)
+        emit('joined_failed', {'message': f'방 "{room_id_to_join}"을(를) 찾을 수 없습니다.'}, room=sid)
         return
 
     target_room = rooms[room_id_to_join]
@@ -428,7 +428,7 @@ def handle_join_room(data):
         target_room.clients.add(sid)
         user.room_id = room_id_to_join
         print(f"Host {user.user_id} (sid: {sid}) re-joined room {room_id_to_join}")
-        emit('joined_room', { 
+        emit('joined_success', { 
             'room_id': room_id_to_join,
             'game_type': target_room.game_type,
             'is_host': True,
@@ -440,7 +440,7 @@ def handle_join_room(data):
 
     if target_room.user_guest is not None: # 게스트가 이미 있는 경우
         if target_room.user_guest.user_id != user.user_id: # 다른 게스트라면 방이 찼음
-            emit('join_room_failed', {'message': f'방 "{room_id_to_join}"이(가) 가득 찼습니다.'}, room=sid)
+            emit('joined_failed', {'message': f'방 "{room_id_to_join}"이(가) 가득 찼습니다.'}, room=sid)
             return
         else: # 같은 게스트가 재참여 (sid 변경 가능성)
             ws_join_room(room_id_to_join, sid=sid)
@@ -451,7 +451,7 @@ def handle_join_room(data):
             target_room.clients.add(sid)
             user.room_id = room_id_to_join
             print(f"Guest {user.user_id} (sid: {sid}) re-joined room {room_id_to_join}")
-            emit('joined_room', {
+            emit('joined_success', {
                 'room_id': room_id_to_join,
                 'game_type': target_room.game_type,
                 'is_host': False,
@@ -469,7 +469,7 @@ def handle_join_room(data):
 
     print(f"User {user.user_id} (sid: {sid}) joined room {room_id_to_join} as guest.")
     # 게스트에게 알림
-    emit('joined_room', {
+    emit('joined_success', {
         'room_id': room_id_to_join,
         'game_type': target_room.game_type,
         'is_host': False,
@@ -487,25 +487,25 @@ def handle_join_room(data):
 
     # 두 명의 플레이어가 모두 준비되었고, 게임이 아직 시작되지 않았다면 게임 시작 카운트다운
     if target_room.host_user and target_room.user_guest and not target_room.game_started:
-        print(f"[SetupGame] Room {room_id_to_join} full. Starting game in 5s.")
-        emit('game_starting_soon', {'countdown': 5, 'message': '5초 후에 게임이 시작됩니다!'}, to=room_id_to_join) # 성공/정보 메시지 번역
+        # print(f"[SetupGame] Room {room_id_to_join} full. Starting game in 5s.")
+        # emit('game_starting_soon', {'countdown': 5, 'message': '5초 후에 게임이 시작됩니다!'}, to=room_id_to_join) 
         
-        def start_game_task(r_id):
-            socketio.sleep(5) # 5초 대기
-            room_to_start = rooms.get(r_id)
-            # 5초 후에도 여전히 두 플레이어가 있고 게임이 시작되지 않았는지 다시 한번 확인
-            if room_to_start and room_to_start.host_user and room_to_start.user_guest and not room_to_start.game_started:
-                # 실제 게임 루프 시작 전 room의 game_started 상태를 True로 변경
-                room_to_start.game_started = True 
-                print(f"[SetupGame] Countdown finished for room {r_id}. Starting game loop.")
-                socketio.emit('game_started', {'room_id': r_id, 'message': '게임 시작!'}, to=r_id) # 성공/정보 메시지 번역
-                socketio.start_background_task(game_loop_for_room, r_id)
-            elif room_to_start and room_to_start.game_started:
-                 print(f"[SetupGame] Game for room {r_id} already started. No new loop initiated.")
-            else:
-                print(f"[SetupGame] Conditions not met to start game for room {r_id} after delay (e.g., player left).")
+        # def start_game_task(r_id):
+        #     room_to_start = rooms.get(r_id)
+        #     # 5초 후에도 여전히 두 플레이어가 있고 게임이 시작되지 않았는지 다시 한번 확인
+        #     if room_to_start and room_to_start.host_user and room_to_start.user_guest and not room_to_start.game_started:
+        #         # 실제 게임 루프 시작 전 room의 game_started 상태를 True로 변경
+        #         room_to_start.game_started = True 
+        #         print(f"[SetupGame] Countdown finished for room {r_id}. Starting game loop.")
+        #         socketio.emit('game_started', {'room_id': r_id, 'message': '게임 시작!'}, to=r_id) # 게임 시작 알림
+        #         socketio.start_background_task(game_loop_for_room, r_id)
+        #     elif room_to_start and room_to_start.game_started:
+        #          print(f"[SetupGame] Game for room {r_id} already started. No new loop initiated.")
+        #     else:
+        #         print(f"[SetupGame] Conditions not met to start game for room {r_id} after delay (e.g., player left).")
 
-        socketio.start_background_task(start_game_task, room_id_to_join)
+        # socketio.start_background_task(start_game_task, room_id_to_join)
+        print(f"[SetupGame] Room {room_id_to_join} is now full. Waiting for host to start the game.")
 
 # --- 새로운 hit 이벤트 핸들러 ---
 @socketio.on('hit')
@@ -646,5 +646,73 @@ def handle_miss(data):
     
     if user.life <= 0:
         _handle_game_over(target_room, user) 
+
+@socketio.on('start_game')
+@authenticated_only
+def handle_start_game(data=None):
+    sid = request.sid
+    user = game_users.get(sid)
+
+    if not user or not user.room_id or user.room_id not in rooms:
+        emit('start_game_failed', {'message': '오류: 유효한 방에 참여하고 있지 않습니다.'}, room=sid)
+        return
+
+    room_to_start = rooms[user.room_id]
+
+    if not user.is_host:
+        emit('start_game_failed', {'message': '호스트만 게임을 시작할 수 있습니다.'}, room=sid)
+        return
+
+    if not room_to_start.user_guest:
+        emit('start_game_failed', {'message': '아직 게스트가 참여하지 않았습니다. 두 명의 플레이어가 필요합니다.'}, room=sid)
+        return
+
+    if room_to_start.game_started:
+        emit('start_game_failed', {'message': '게임이 이미 시작되었습니다.'}, room=sid)
+        return
+    
+    if room_to_start.game_ended:
+        emit('start_game_failed', {'message': '이미 종료된 게임방입니다. 새로운 방을 만들어주세요.'}, room=sid)
+        return
+
+    print(f"[HostStartGame] Host {user.user_id} is starting game in room {room_to_start.room_id}. Countdown initiated.")
+    
+    emit('game_starting_soon', {
+        'room_id': room_to_start.room_id, 
+        'countdown': 5, 
+        'message': '호스트가 게임을 시작합니다! 5초 후에 게임이 시작됩니다!'
+    }, to=room_to_start.room_id)
+    
+    def _initiate_game_start_sequence(r_id):
+        socketio.sleep(5) # 5초 대기
+        current_room = rooms.get(r_id)
+        
+        if current_room and current_room.host_user and current_room.user_guest and \
+           not current_room.game_started and not current_room.game_ended and \
+           current_room.host_user.sid in current_room.clients and \
+           current_room.user_guest.sid in current_room.clients:
+            
+            current_room.game_started = True 
+            print(f"[HostStartGame] Countdown finished for room {r_id}. Starting game loop.")
+
+            game_started_payload = {
+                'room_id': current_room.room_id,
+                'message': '게임 시작!',
+                'initial_difficulty': current_room.difficulty,
+                'initial_speed': 50 + (current_room.difficulty * 5),
+                'initial_word_generation_interval': current_room.word_generation_interval,
+                'host': asdict(current_room.host_user) if current_room.host_user else None,
+                'guest': asdict(current_room.user_guest) if current_room.user_guest else None,
+            }
+            socketio.emit('game_started', game_started_payload, to=r_id)
+            socketio.start_background_task(game_loop_for_room, r_id)
+        elif current_room and (current_room.game_started or current_room.game_ended):
+             print(f"[HostStartGame] Game for room {r_id} was already started or ended during countdown. No new loop initiated.")
+        else:
+            print(f"[HostStartGame] Conditions not met to start game for room {r_id} after delay (e.g., player left).")
+            if current_room: 
+                 emit('start_game_failed', {'message': '게임 시작 중 플레이어가 방을 나갔거나 문제가 발생하여 시작할 수 없습니다.'}, to=r_id)
+
+    socketio.start_background_task(_initiate_game_start_sequence, room_to_start.room_id)
 
 

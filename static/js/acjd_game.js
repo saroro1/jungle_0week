@@ -357,7 +357,6 @@ import { GameHelper } from "./sdk/game.js";
     function checkInput(e) {
         // console.log("check");
         if (e.key === "Enter" && this === document.activeElement) {
-            // console.log("Enter");
             const typedWord = this.value.trim();
             wordInput.value = '';
             if (!typedWord) return;
@@ -410,7 +409,6 @@ import { GameHelper } from "./sdk/game.js";
         });
     }
 
-
     function resetGameDisplay() {
         startScreen.style.display = 'flex';
         startButton.style.display = 'inline-block';
@@ -457,25 +455,22 @@ import { GameHelper } from "./sdk/game.js";
                 animationFrameId = requestAnimationFrame(gameLoop);
             }
             isPaused = false;
-            console.log("애니메이션이 재개되었습니다.");
+            wordInput.focus();
         } else {
-            console.log("애니메이션은 현재 실행 중입니다.");
         }
     }
 
     document.addEventListener("visibilitychange", function () {
         //게임 종료시는 작동 안함.
-        if(gameEnd){
+        if (gameEnd) {
             return;
         }
         if (document.hidden) {
             // 사용자가 창을 벗어났을 때 실행할 코드
             pause();
-            console.log("창을 벗어났습니다.");
         } else {
             // 사용자가 다시 창으로 돌아왔을 때 실행할 코드
             resume();
-            console.log("창으로 돌아왔습니다.");
         }
     });
 
@@ -491,6 +486,16 @@ import { GameHelper } from "./sdk/game.js";
         window.location.href = `/game/ranking/${gameType || 'kr'}/${1}`;
     });
     wordInput.addEventListener('keypress', checkInput);
+
+    //esc 일시정지
+    window.addEventListener('keydown', function (e) {
+        if (e.code === 'Escape') {
+            console.log("ESC");
+            pause();
+            alert("일시정지\n확인을 누르면 재개");
+            resume();
+        }
+    });
 
     // 페이지 로드 시 초기화
     initGame(0, 3);

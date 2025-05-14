@@ -88,8 +88,12 @@ def game_ranking_page(type_word: str, page: int):
     }
     return render_template("./game/ranking.html", **context)
 
-
+@game_route.route("/", endpoint="main")
+@auth_middleware(use_redirect=True)
+def game_main_page():
+    return render_template("./main.html")
 @game_route.route("/play", endpoint="play")
 @auth_middleware(use_redirect=True)
 def game_play_page():
     return render_template("./game/acid_game.html")
+

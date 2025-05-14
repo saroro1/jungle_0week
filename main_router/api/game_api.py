@@ -4,7 +4,7 @@ import math
 
 from flask import Blueprint, g, jsonify, request
 
-from constant import word_type
+from constant import word_type, DBContainer
 from constant.eng_words import eng_word
 from constant.kor_words import kor_word
 from middleware import auth_middleware
@@ -87,7 +87,7 @@ def set_highscore():
 
         user_id = g.current_user.id
         
-        user_doc_for_score = UserEntity.collection.find_one(
+        user_doc_for_score = DBContainer.user_db.collection.find_one(
             {"user_id": user_id},
             {f"high_score.{score_type}": 1}
         )

@@ -52,6 +52,10 @@ def test_game():
 def test_rank():
     return render_template("./game/ranking.html")
 
+@app.route('/test/makeroom')
+def test_make_room():
+    return render_template("./game/make_room.html")
+
 
 if __name__ == '__main__':
     print(os.environ.get("IS_DEBUG"))

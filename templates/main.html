@@ -9,11 +9,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Custom Fonts -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/font.css') }}"
+    />
 
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-    <script type="module" src="{{url_for('static', filename = 'js/main.js')}}"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <script
+      type="module"
+      src="{{url_for('static', filename = 'js/main.js')}}"
+    ></script>
   </head>
 
   <body
@@ -56,35 +65,109 @@
         <div class="flex space-x-4 items-center justify-center">
           <div class="mt-7">
             <button id="singleButton" class="single-button">싱글모드</button>
-            <button id="multiButton" class="multi-button ml-4 " onclick="openMultiModal(),closeModeModal()">멀티모드</button>
+            <button
+              id="multiButton"
+              class="multi-button ml-4"
+              onclick="openMultiModal(),closeModeModal()"
+            >
+              멀티모드
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-<div id="modal_multi"class="modal">
-  <div class="flex flex-col items-center title-bar">
-    <div class="flex flex-col items-center title-bar">
+    <div id="modal_multi" class="modal">
+      <div class="flex flex-col items-center title-bar">
+        <div class="flex flex-col items-center title-bar">
+          <button
+            id="closeButton"
+            class="close-btn absolute top-1 right-2"
+            onclick="closeMultiModal()"
+          >
+            X
+          </button>
+          <h2 class="text-4xl mb-4 font-bold mt-20 text-black">멀티모드</h2>
+          <div class="flex space-x-4 items-center justify-center">
+            <div class="mt-7">
+              <button
+                id="make_room_Button"
+                class="make_room-button"
+                onclick="openMakeRoomModal()"
+              >
+                방 만들기
+              </button>
+
+              <button
+                id="join_room_Button"
+                class="join_room-button ml-4"
+                onclick="openJoinRoomModal()"
+              >
+                방 참여하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modal_MakeRoom" class="modal">
+      <div class="flex flex-col items-center title-bar">
         <button
           id="closeButton"
           class="close-btn absolute top-1 right-2"
-          onclick="closeMultiModal()"
+          onclick="closeMakeRoomModal()"
         >
           X
         </button>
- <h2 class="text-4xl mb-4 font-bold mt-20 text-black">멀티모드</h2>
-        <div class="flex space-x-4 items-center justify-center">
-          <div class="mt-7">
-            <button id="make_room_Button" class="make_room-button"
-            onclick="alert()">방 만들기</button>
 
-            <button id="join_room_Button" class="join_room-button ml-4"
-            onclick="alert()">방 참여하기</button>
+        <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 생성하기</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          
+          <div class="mt-7">
+            <span class="text-black">여기에 서버에서 날라온 게임 코드 있어야함</span>
+            <button id="copyButton" class="copy-button">복사하기</button>
+          </div>
+          <div class="'mt-4">
+            <button
+              id="MultiStart_Button"
+              class="multistart-button ml-4"
+              onclick=""
+            >
+              게임 시작
+            </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div id="modal_JoinRoom" class="modal">
+      <div class="flex flex-col items-center title-bar">
+        <button
+          id="closeButton"
+          class="close-btn absolute top-1 right-2"
+          onclick="closeJoinRoomModal()"
+        >
+          X
+        </button>
+
+        <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 참여하기</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          <div></div>
+          <div class="mt-10">
+            <input
+              id="roomCodeInput"
+              type="text"
+              placeholder="방코드 입력"
+              class="bg-white text-black rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md"
+              style="font-family: 'Pretendard-Regular'"
+            />
+            <button id="join-Button" class="join-button"
+            onclick="closeJoinRoomModal()">참여하기</button>
+ 
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="flex flex-row items-center justify-center space-x-12 mt-10">
       <a
@@ -109,9 +192,21 @@
           <option value="complex">복합</option>
         </select>
 
-        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </div>

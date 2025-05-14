@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="../static/css/font.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-      body {
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="../static/css/font.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
       background-image: url("{{url_for('static',filename = '/asset/img/window_background.png')}}");
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center center;
       background-attachment: fixed;
-      }
+    }
 
-      .title {
+    .title {
       font-family: "Ycomputer-Regular";
       font-size: 110px;
       color: white;
@@ -25,79 +26,70 @@
       margin-top: 20%;
       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
       font-weight: bold;
-      }
-    </style>
-  </head>
-  <body
-    class="h-screen flex flex-col items-center justify-center relative text-white"
-  >
-    <div class="absolute top-6 right-6">
-{#      <a
-      href="{{ url_for('mypage') }}"
-      class="text-black underline text-lg hover:text-gray-700"
-      style="font-family: 'Ycomputer-Regular';"
-      >
+    }
+  </style>
+</head>
+
+<body class="h-screen flex flex-col items-center justify-center relative text-white">
+  <div class="absolute top-6 right-6">
+    <a href="{{ url_for('game.mypage') }}" class="text-black underline text-lg hover:text-gray-700"
+      style="font-family: 'Ycomputer-Regular';">
       마이페이지
-      </a>#}
-    </div>
-    <div>
-      <h1 class="title">SQUALL</h1>
-    </div>
-    <div class="mt-12"></div>
-{#      <a
-      href="{{ url_for('play') }}"
-      class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
-      style="font-family: 'Ycomputer-Regular'; text-decoration: none;"
-      >
+    </a>
+  </div>
+  <div>
+    <h1 class="title">SQUALL</h1>
+  </div>
+  <div class="mt-12">
+    <a id="startButton" href="#" class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
+      style="font-family: 'Ycomputer-Regular'; text-decoration: none;">
       시작하기
-      </a>#}
-    </div>
+    </a>
+  </div>
 
-    <div class="flex flex-row items-center justify-center space-x-12 mt-10">
-      
-{#      <a
-            href="{{ url_for('ranking') }}"
+  <div class="flex flex-row items-center justify-center space-x-12 mt-10">
+
+    <a id="rankingButton" href="{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}"
       class="text-white text-xl underline hover:text-gray-700"
-      style="font-family: 'Ycomputer-Regular'"
-      >#}
+      style="font-family: 'Ycomputer-Regular'">
       랭킹보러가기
-      </a>
+    </a>
 
-      <div class="relative">
-      <button
-        id="modeSelectButton"
-        class="text-white text-xl underline hover:text-gray-700 "
-        onclick="toggleOptions()"
-        style="font-family: 'Ycomputer-Regular';"
-      >
-        모드선택
-      </button>
-      <select
-        id="modeSelectDropdown"
-        class="absolute top-10 right-0 bg-white text-black rounded-md p-2 hidden"
-        style="font-family: 'Pretendard-Regular';"
-        oninput="applySelection()"
-      >
-        <option value="모드선택" disabled selected>모드선택</option>
-        <option value="한글">한글</option>
-        <option value="영어">영어</option>
-        <option value="복합">복합</option>
+    <div class="relative">
+      <select id="modeSelectDropdown" class="bg-white text-black rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md appearance-none cursor-pointer pr-8"
+        style="font-family: 'Pretendard-Regular';" onchange="updateStartAndRankingButtons()">
+        <option class="py-2 px-4 hover:bg-gray-100" value="" disabled selected>모드선택</option>
+        <option class="py-2 px-4 hover:bg-gray-100" value="kr" selected>한글</option>
+        <option class="py-2 px-4 hover:bg-gray-100" value="en">영어</option>
+        <option class="py-2 px-4 hover:bg-gray-100" value="complex">복합</option>
       </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </div>
-      <script>
-      function toggleOptions() {
+    </div>
+    <script>
+      function updateStartAndRankingButtons() {
         const selectBox = document.getElementById("modeSelectDropdown");
-        selectBox.classList.toggle("hidden");
+        const startButton = document.getElementById("startButton");
+        const rankingButton = document.getElementById("rankingButton");
+        const selectedMode = selectBox.value;
+        const rankingUrlTemplate = "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}";
+
+        if (selectedMode) {
+          startButton.href = `{{ url_for('game.play', gametype='') }}${selectedMode}`;
+          rankingButton.href = rankingUrlTemplate.replace('TEMP_WORD', encodeURIComponent(selectedMode));
+        } else {
+          startButton.href = "#";
+          rankingButton.href = "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}".replace('TEMP_WORD', '');
+        }
       }
 
-      function applySelection() {
-        const selectBox = document.getElementById("modeSelectDropdown");
-        const button = document.getElementById("modeSelectButton");
-        
-        button.textContent = selectBox.value;
-        selectBox.classList.add("hidden");
-      }
-      </script>
-    </div>
-  </body>
+      // 페이지 로딩 시 초기 상태 설정 (선택 사항)
+      document.addEventListener('DOMContentLoaded', function() {
+        updateStartAndRankingButtons();
+      });
+    </script>
+  </div>
+</body>
+
 </html>

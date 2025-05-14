@@ -40,6 +40,8 @@ body {
 
 #game-area {
     height: 600px; /* 예시 크기 */
+    min-height: 600px;
+    max-height: 600px;
     position: relative;
     overflow: hidden; /* 영역 벗어나는 단어 숨김 */
     background-image: url("../asset/img/window_background.png");

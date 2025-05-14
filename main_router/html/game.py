@@ -116,4 +116,4 @@ def game_my_page():
     user_nickname = g.current_user.nickname
     user_ranking = g.current_user.getMyRanking(g.current_user.id)
     user_score = g.current_user.high_score
-    return render_template("./mypage.html", user_id=user_id, user_name=user_nickname, user_ranking=user_ranking, user_score = user_score)
+    return render_template("./mypage.html", user_id=user_id, user_nickname=user_nickname, user_ranking=user_ranking, user_score = user_score)

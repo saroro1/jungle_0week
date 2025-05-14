@@ -1,3 +1,5 @@
+const singleButton = document.getElementById("singleButton");
+
 function openModeModal() {
   document.getElementById("modal_mode").style.display = "block";
 }
@@ -52,4 +54,10 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("change", updateStartAndRankingButtons);
 
   updateStartAndRankingButtons();
+});
+
+singleButton.addEventListener('click',()=>{
+  console.log("click");
+  const typeDropdwon = document.getElementById("modeSelectDropdown");
+  window.location.href = `/game/play/${typeDropdwon.value}`;
 });

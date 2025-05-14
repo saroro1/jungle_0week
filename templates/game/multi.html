@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>join room</title>
+
+      <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Fonts -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/font.css') }}"
+    />
+
+    <!-- Custom Styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/acid_game.css')}}">
+</head>
+
+<body>
+    <div id="modal_MakeRoom" class="modal" style="display: block;">
+      <div class="flex flex-col items-center title-bar">
+        <button
+          id="closeButton"
+          class="close-btn absolute top-1 right-2"
+          onclick="closeMakeRoomModal()"
+        >
+          X
+        </button>
+
+        <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 생성하기</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          
+          <div class="mt-7">
+            <span class="text-black" id="room-link">여기에 서버에서 날라온 게임 코드 있어야함</span>
+            <button id="copyButton" class="copy-button">복사하기</button>
+          </div>
+          <div class="'mt-4">
+            <button
+              id="MultiStart_Button"
+              class="multistart-button ml-4"
+              onclick=""
+            >
+              게임 시작
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div id="modal_JoinRoom" class="modal" style="display: none;">
+      <div class="flex flex-col items-center title-bar">
+        <button
+          id="closeButton"
+          class="close-btn absolute top-1 right-2"
+          onclick="closeJoinRoomModal()"
+        >
+          X
+        </button>
+
+        <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 참여하기</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          <div></div>
+          <div class="mt-10">
+            <input
+              id="roomCodeInput"
+              type="text"
+              placeholder="방코드 입력"
+              class="bg-white text-black rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-md"
+              style="font-family: 'Pretendard-Regular'"
+            />
+            <button
+              id="join-Button"
+              class="join-button"
+              onclick="closeJoinRoomModal()"
+            >
+              참여하기
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="game-container" data-membertype="{{membertype}}" data-gametype="{{gametype}}" style="display: none">
+        <div id="info-panel">
+            <span>내 목숨: <span id="lives">3</span></span>
+            <span>상대 목숨: <span id="opponent-lives">3</span></span>
+            <div class="close-btn">✕</div>
+        </div>
+
+        <div id="game-area">
+        </div>
+
+        <input type="text" id="word-input" placeholder="단어를 입력하세요" autocomplete="off">
+
+        <div id="start-screen" class="overlay" stype="display: none">
+            <button id="start-button">Game Start</button>
+            <div id="countdown"></div>
+        </div>
+        <div id="game-over-screen" class="overlay" style="display: none">
+            <div class="window">
+                <span class="window-header"></span>
+                <div class="game-over-content-area">
+                    <h1 class="game-over-title">게임 오버!</h1>
+                    <div> User : <span id="user-nickname"></span></div>
+                    <div> 최종 점수 : <span id="final-score">0</span></div>
+                    <div id="new-high-score">!내 최고 기록 달성!</div>
+                </div>
+                <div class="game-over-button-area">
+                    <button class="alert-button" id="main-page-button">메인페이지</button>
+                    <button class="alert-button" id="restart-button">다시하기</button>
+                    <button class="alert-button" id="ranking-button">랭킹 보러가기</button>
+                </div>
+
+            </div>
+        </div>
+<script type="module" src="{{url_for('static', filename = 'js/multi.js')}}"></script>
+</body>
+
+</html>

@@ -118,7 +118,8 @@ def game_my_page():
     user_score = g.current_user.high_score
     return render_template("./mypage.html", user_id=user_id, user_nickname=user_nickname, user_ranking=user_ranking, user_score = user_score)
 
-@game_route.route("/multi/<ishost>", endpoint="multi")
+@game_route.route("/multi/<gametype>/<membertype>", endpoint="multihost")
+@game_route.route("/multi/<gametype>/<membertype>/<link>", endpoint="multiguset")
 @auth_middleware(use_redirect=True)
-def game_multi(ishost):
-    return render_template("./game/multi.html", ishost=ishost)
+def game_multi(gametype:str,membertype:str, link=''):
+    return render_template("./game/multi.html", membertype=membertype, gametype=gametype, link=link)

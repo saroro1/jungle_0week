@@ -41,6 +41,11 @@ function closeJoinRoomModal() {
   document.getElementById("modal_JoinRoom").style.display = "none";
 }
 
+function goToMulti(isHost) {
+  const typeDropdwon = document.getElementById("modeSelectDropdown");
+  window.location.href = `/game/multi/${typeDropdwon.value}/${isHost?"host":"guest"}`;
+}
+
 
 function updateStartAndRankingButtons() {
   const selectBox = document.getElementById("modeSelectDropdown");

@@ -30,13 +30,12 @@ for i in word_type:
 DBContainer.user_db = user_db
 
 
-@app.route("/", endpoint="page_main")
-@auth_middleware(use_redirect=True)
-
-
 @app.errorhandler(404)
 def error_handling_40(error):
     return render_template("error.html")
+
+@app.route("/", endpoint="page_main")
+@auth_middleware(use_redirect=True)
 def game_main_page():
     return redirect("/game")
 

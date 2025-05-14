@@ -4,109 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link
-      rel="stylesheet"
-      href="{{url_for('static', filename = 'css/font.css')}}"
-    />
+
+    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <style>
-      body {
-        background-image: url("{{url_for('static',filename = '/asset/img/window_background.png')}}");
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center center;
-        background-attachment: fixed;
-      }
+    <!-- Custom Fonts -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font.css') }}" />
 
-      .title {
-        font-family: "Ycomputer-Regular";
-        font-size: 110px;
-        color: white;
-        text-align: center;
-        margin-top: 20%;
-        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-          1px 1px 0 #000;
-        font-weight: bold;
-      }
-      .modal {
-        position: absolute;
-        align-items: center;
-        background-color: #ddd;
-        border: #000 solid 0.8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
-        z-index: 1000;
-        display: none;
-        text-align: center;
-        font-family: "Ycomputer-Regular";
-        height: 360px;
-        width: 400px;
-      }
-
-      .close-btn {
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(to bottom, #f66, #d00);
-        border-radius: 4px;
-        color: white;
-        text-align: center;
-        line-height: 24px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.5);
-      }
-      .title-bar {
-        background: linear-gradient(
-          to bottom,
-          #0033b0 0%,
-          #0043e9 50%,
-          #3366ff 100%
-        );
-        height: 27px;
-        min-height: 25px;
-        width: 100%;
-        border-radius: 10px 10px 0 0;
-        border-bottom: 1px solid #000;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      }
-      .single-button {
-        background-color: #22c55e;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        margin-right: 1.5rem;
-        font-size: 1.5rem;
-        width: 9rem;
-        height: 10rem;
-        box-sizing: border-box;
-        border: 0.7px solid black;
-        transition: background-color 0.3s;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      }
-
-      .single-button:hover {
-        background-color: #16a34a;
-      }
-      .battle-button {
-        background-color: #ff0000;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-       
-        font-size: 1.5rem;
-        width: 9rem;
-        height: 10rem;
-        box-sizing: border-box;
-        border: 0.7px solid black;
-        transition: background-color 0.3s;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-      }
-
-      .battle-button:hover {
-        background-color: #ce2020;
-      }
-    </style>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+    <script type="module" src="{{url_for('static', filename = 'js/main.js')}}"></script>
   </head>
 
   <body
@@ -121,44 +28,64 @@
         마이페이지
       </a>
     </div>
-    <div>
-      <h1 class="title">SQUALL</h1>
-    </div>
+
+    <h1 class="title">SQUALL</h1>
+
     <div class="mt-12">
       <button
         id="startButton"
         class="text-white text-3xl bg-green-500 hover:bg-green-600 px-8 py-4 rounded-full"
         style="font-family: 'Ycomputer-Regular'; text-decoration: none"
-        onclick="openModal()"
+        onclick="openModeModal()"
       >
         시작하기
       </button>
     </div>
-    <div id="modal" class="modal">
+
+    <div id="modal_mode" class="modal">
       <div class="flex flex-col items-center title-bar">
         <button
           id="closeButton"
           class="close-btn absolute top-1 right-2"
-          onclick="closeModal()"
+          onclick="closeModeModal()"
         >
           X
         </button>
 
         <h2 class="text-4xl mb-4 font-bold mt-20 text-black">모드 고르기</h2>
         <div class="flex space-x-4 items-center justify-center">
-          <div class="mt-7 ">
-            <button id="startButton" class="single-button ">싱글모드</button>
-            <button
-              id="battlemodeButton"
-              class=" battle-button ml-4"
-              onclick=""
-            >
-              경쟁모드
-            </button>
+          <div class="mt-7">
+            <button id="singleButton" class="single-button">싱글모드</button>
+            <button id="multiButton" class="multi-button ml-4 " onclick="openMultiModal(),closeModeModal()">멀티모드</button>
           </div>
         </div>
       </div>
     </div>
+
+<div id="modal_multi"class="modal">
+  <div class="flex flex-col items-center title-bar">
+    <div class="flex flex-col items-center title-bar">
+        <button
+          id="closeButton"
+          class="close-btn absolute top-1 right-2"
+          onclick="closeMultiModal()"
+        >
+          X
+        </button>
+ <h2 class="text-4xl mb-4 font-bold mt-20 text-black">멀티모드</h2>
+        <div class="flex space-x-4 items-center justify-center">
+          <div class="mt-7">
+            <button id="make_room_Button" class="make_room-button"
+            onclick="alert()">방 만들기</button>
+
+            <button id="join_room_Button" class="join_room-button ml-4"
+            onclick="alert()">방 참여하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <div class="flex flex-row items-center justify-center space-x-12 mt-10">
       <a
         id="rankingButton"
@@ -176,76 +103,21 @@
           style="font-family: 'Pretendard-Regular'"
           onchange="updateStartAndRankingButtons()"
         >
-          <option
-            class="py-2 px-4 hover:bg-gray-100"
-            value=""
-            disabled
-            selected
-          >
-            모드선택
-          </option>
-          <option class="py-2 px-4 hover:bg-gray-100" value="kr" selected>
-            한글
-          </option>
-          <option class="py-2 px-4 hover:bg-gray-100" value="en">영어</option>
-          <option class="py-2 px-4 hover:bg-gray-100" value="complex">
-            복합
-          </option>
+          <option value="" disabled selected>모드선택</option>
+          <option value="kr" selected>한글</option>
+          <option value="en">영어</option>
+          <option value="complex">복합</option>
         </select>
-        <div
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
+
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </div>
     </div>
 
-    <script>
-      function openModal() {
-        document.getElementById("modal").style.display = "block";
-      }
-
-      function closeModal() {
-        document.getElementById("modal").style.display = "none";
-      }
-
-      function updateStartAndRankingButtons() {
-        const selectBox = document.getElementById("modeSelectDropdown");
-        const rankingButton = document.getElementById("rankingButton");
-        const selectedMode = selectBox.value;
-        const rankingUrlTemplate =
-          "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}";
-
-        if (selectedMode) {
-          rankingButton.href = rankingUrlTemplate.replace(
-            "TEMP_WORD",
-            encodeURIComponent(selectedMode)
-          );
-        } else {
-          rankingButton.href =
-            "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}".replace(
-              "TEMP_WORD",
-              ""
-            );
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        updateStartAndRankingButtons();
-      });
-    </script>
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
 </html>

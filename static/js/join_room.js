@@ -412,7 +412,7 @@ function gametest() {
     startGame(3);
 }
 
-const socket = new SocketClient("http://127.0.0.1:9001");
+const socket = new SocketClient(window.location.protocol+"//"+window.location.host);
 const inputLink = document.getElementById("link");
 const join_room_button = document.getElementById("join_room");
 

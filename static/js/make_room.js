@@ -414,7 +414,7 @@ function gametest() {
     startGame(3);
 }
 
-const socket = new SocketClient("http://172.21.100.117:9001");
+const socket = new SocketClient(window.location.protocol+"//"+window.location.host);
 const printLink = document.getElementById("link");
 const startGame2 = document.getElementById("start-button-2");
 

@@ -126,6 +126,14 @@ export class SocketClient {
     this.socket?.emit('miss', { uuid: wordUuid });
   }
 
+  /**
+   * 호스트가 게임 시작을 서버에 요청합니다.
+   * 현재 방 ID 등은 서버에서 사용자의 세션을 통해 자동으로 알 수 있으므로 별도 파라미터는 필요 없습니다.
+   */
+  sendStartGame() {
+    this.socket?.emit('start_game');
+  }
+
   // --- Event Listeners (Handlers) ---
 
   /**
@@ -170,10 +178,29 @@ export class SocketClient {
 
   /**
    * 방 참가 성공 시 호출될 콜백을 등록합니다. (본인에게 전송)
-   * @param {(data: { room_id: string, user_id: string, game_type: string, host_id: string, guest_id: string | null }) => void} callback
+   * 서버에서 'joined_success' 이벤트를 보낼 때 호출됩니다.
+   * @param {(data: { room_id: string, user_id: string, game_type: string, host_id: string, guest_id: string | null, is_host: boolean, game_started: boolean }) => void} callback
    */
   onJoinedRoom(callback) {
-    this.socket?.on('joined_room', callback);
+    this.socket?.on('joined_success', callback);
+  }
+
+  /**
+   * 방 참가 실패 시 호출될 콜백을 등록합니다.
+   * 서버에서 'joined_failed' 이벤트를 보낼 때 호출됩니다.
+   * @param {(data: { message: string }) => void} callback
+   */
+  onJoinedFailed(callback) {
+    this.socket?.on('joined_failed', callback);
+  }
+
+  /**
+   * 방 생성 또는 기타 방 관련 작업 실패 시 호출될 콜백을 등록합니다.
+   * 서버에서 'room_failed' 이벤트를 보낼 때 호출됩니다.
+   * @param {(data: { message: string }) => void} callback
+   */
+  onRoomFailed(callback) {
+    this.socket?.on('room_failed', callback);
   }
 
   /**
@@ -186,12 +213,19 @@ export class SocketClient {
 
   /**
    * 게임이 곧 시작될 것을 알리는 카운트다운 시 호출될 콜백을 등록합니다.
-   * @param {(data: { room_id: string, countdown: number }) => void} callback
+   * @param {(data: { room_id: string, countdown: number, message?: string }) => void} callback
    */
   onGameStartingSoon(callback) {
     this.socket?.on('game_starting_soon', callback);
   }
 
+  /**
+   * 게임이 시작되었을 때 호출될 콜백을 등록합니다.
+   * @param {(data: { room_id: string, message: string, initial_difficulty?: number, initial_speed?: number, initial_word_generation_interval?: number, host?: UserState, guest?: UserState }) => void} callback
+   */
+  onGameStarted(callback) {
+    this.socket?.on('game_started', callback);
+  }
 
   /**
    * 게임 난이도 변경 시 호출될 콜백을 등록합니다.

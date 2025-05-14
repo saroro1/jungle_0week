@@ -90,6 +90,7 @@
                     />
               </div>
               <div class="mt-5">
+               {{url_for('auth.sign_in')}}
                  <button
                     id="sign_up_btn"
                     class="xp-button w-full mt-4"
@@ -115,9 +116,7 @@
           } else {
             alert("사용 가능한 아이디입니다.");
           }
-          else{
-              alert("사용 가능한 아이디입니다.")
-          }
+
         });
 
       document.getElementById("sign_up_btn").addEventListener("click", async function(e){

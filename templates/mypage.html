@@ -70,6 +70,9 @@
         </div>
 
         <h1 class="h1_title mt-6">마이페이지</h1>
+        <!--닉네임 ID 비밀번호 모두 서버에서 가져온 값을 띄워줌
+        이후 edit아이콘을 누르면 닉네임 비밀번호 수정 가능, 수정 후 저장하기 버튼 누르면 서버에 변경된 값 저장되어야함
+        (서버 연결 부분 구현 X 현재 수정과 저장하기 버튼만 활성화) -->
         <div class="space-y-4">
           <div class="flex items-center gap-4" style="font-family: Pretendard">
             <div class="w-24 font-bold text-xl">닉네임</div>
@@ -135,7 +138,8 @@
           </div>
         </div>
 
-        <!-- 랭킹부분 -->
+        <!-- 랭킹부분 서버에서 유저의 게임 기록이 남아있는 모드의 점수와 등수를 한번에 표시
+         지금은 예시 데이터가 들어가있음-->
         <div class="mt-80">
           <h1 class="h1_title">랭킹</h1>
           <table

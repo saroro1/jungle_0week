@@ -6,7 +6,7 @@
     <title>
         {% if current_type == 'kr' %}한글
         {% elif current_type == 'en' %}영어
-        {% elif current_type == 'complex' %}혼합
+        {% elif current_type == 'complex' %}복합
         {% else %}{{ current_type.upper() }}{% endif %} 랭킹 - Jungle Typing Game
     </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ranking.css') }}">

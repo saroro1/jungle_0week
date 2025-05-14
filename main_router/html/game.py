@@ -112,8 +112,8 @@ def game_play_page(gametype: str):
 @game_route.route("/mypage", endpoint="mypage")
 @auth_middleware(use_redirect=True)
 def game_my_page():
-    id = g.current_user.id
+    user_id = g.current_user.id
     user_nickname = g.current_user.nickname
     user_ranking = g.current_user.getMyRanking(g.current_user.id)
 
-    return render_template("./mypage.html", user_id=id, user_name=user_nickname, user_ranking=user_ranking)
+    return render_template("./mypage.html", user_id=user_id, user_name=user_nickname, user_ranking=user_ranking)

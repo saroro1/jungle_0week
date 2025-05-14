@@ -21,7 +21,6 @@ body {
     box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.6);
     background-color: #ece9d8;
     overflow: hidden;
-    border: 2px solid #0078d7;
     position: relative; /* 내부 요소 absolute positioning 기준 */
     width: 90%; /* 예시 크기 */
 }
@@ -182,6 +181,20 @@ button.alert-button {
   }
 }
 
+#start-button {
+    transition-duration: 0.5s;
+    border-color: transparent;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+#start-button:hover {
+    transition-duration: 0.5s;
+    background-color: #9f9f9f;
+    box-shadow: none;
+    font-size: 1.8rem;
+}
 /* 게임 시작 시 숨길 요소
 #game-container > *:not(#start-screen):not(#game-over-screen) {
     필요에 따라 초기 숨김 처리} */

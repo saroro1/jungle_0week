@@ -59,7 +59,7 @@ import { GameHelper } from "./sdk/game.js";
             // 가로 위치 랜덤 설정 (게임 영역 너비 안에서)
             const gameAreaWidth = gameArea.clientWidth;
             // 단어 너비를 고려하여 최대 left 값 계산 (대략적으로)
-            const maxLeft = gameAreaWidth - (word.length * 25); // 글자 크기에 따라 조절 필요
+            const maxLeft = gameAreaWidth - (word.length * 30); // 글자 크기에 따라 조절 필요
             wordElement.style.left = `${Math.max(0, Math.random() * maxLeft)}px`;
             wordElement.style.top = `0px`; // 항상 위에서 시작
 
@@ -241,6 +241,7 @@ import { GameHelper } from "./sdk/game.js";
         sounds["gameOver"].pause();
         sounds["gameOver"].currentTime = 0;
         sounds["bgm"].play();
+
     }
 
     // 게임 오버 함수

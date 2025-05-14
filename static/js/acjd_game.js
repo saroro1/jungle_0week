@@ -260,7 +260,7 @@ import { GameHelper } from "./sdk/game.js";
         finalScoreDisplay.textContent = gameScore;
 
         //TODO : user닉네임 추가
-        userNickName.textContent = '닉네임';
+        userNickName.textContent =  response.result.nickname ?? "-"; 
 
         gameOverScreen.style.display = 'flex'; // 게임 오버 화면 표시
         sounds["gameOver"].play()

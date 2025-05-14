@@ -20,13 +20,13 @@ const opponentLivesDisplay = document.getElementById('opponent-lives');
 const livesDisplay = document.getElementById('lives');
 const startScreen = document.getElementById('start-screen');
 const gameOverScreen = document.getElementById('game-over-screen');
-const startButton = document.getElementById('start-button');
-const finalScoreDisplay = document.getElementById('final-score');
+const resultDisplay = document.getElementById('result');
 const newHighScore = document.getElementById('new-high-score');
 const countdownDisplay = document.getElementById('countdown');
 const goToMainButton = document.getElementById('main-page-button');
 const restartButton = document.getElementById('restart-button');
-const goToRankButton = document.getElementById('ranking-button');
+const myScoreScreen = document.getElementById('user-score');
+const opponentScoreScreen = document.getElementById('opponent-score');
 let isWin = false;
 
 //음악
@@ -44,8 +44,9 @@ sounds["countDown"].volume = 0.5
 
 // 게임 설정 및 상태 변수
 const wordList = [];
-let gameScore = 0;
-let lives = 3;
+let myScore = 0;
+let opponentScore = 0;
+let lives = 5;
 let activeWords = []; // ActiveWord 클래스
 
 let gameType = "none";
@@ -59,9 +60,6 @@ let gameEnd = false;
 
 // word class
 class ActiveWord {
-    baseScore = 10
-    multiplier = 1.5
-    minLength = 3
     y = 0; // 내부 y 위치 (float)
 
     constructor(word, uuid, type = "normal", fallSpeed = 100) { // fallSpeed는 이제 px/sec
@@ -103,7 +101,6 @@ class ActiveWord {
 
     setWord(newWord) {
         this.wordElement.textContent = newWord;
-        this.score = this.getScore(newWord, this.type);
     }
 
     getWord() {
@@ -156,10 +153,8 @@ class ActiveWord {
 }
 
 // 초기화 함수
-function initGame(initScore = 0, initLives = 3) {
+function initGame() {
     activeWords = [];
-    gameScore = initScore;
-    lives = initLives;
     gameType = gameContainer.dataset.gametype;
 
     livesDisplay.textContent = lives;
@@ -195,7 +190,6 @@ async function startGame(initLives = 3) {
     wordList.length = 0;
     // console.log(gameType);
 
-    startButton.style.display = 'none';
     await startCountdown();
     startScreen.style.display = 'none';
     wordInput.disabled = false;
@@ -230,7 +224,10 @@ function gameOver() {
     }
 
     wordInput.disabled = true;
-    finalScoreDisplay.textContent = isWin ? "Victory" : "Defeat";
+
+    myScoreScreen.textContent = myScore;
+    opponentScoreScreen.textContent = opponentScore;
+    resultDisplay.textContent = isWin ? "Victory" : "Defeat";
 
     gameOverScreen.style.display = 'flex';
     sounds["gameOver"].play()
@@ -305,7 +302,6 @@ async function startCountdown() {
 
 function resetGameDisplay() {
     startScreen.style.display = 'flex';
-    startButton.style.display = 'inline-block';
     countdownDisplay.style.display = 'none';
     gameOverScreen.style.display = 'none';
     newHighScore.style.display = 'none';
@@ -361,15 +357,9 @@ document.addEventListener("visibilitychange", function () {
 
 
 // 이벤트 리스너 설정
-startButton.addEventListener('click', () => startGame(3));
-restartButton.addEventListener('click', () => startGame(3));
+restartButton.addEventListener('click', () => window.location.reload());
 goToMainButton.addEventListener('click', () => {
     window.location.replace("/");
-});
-
-goToRankButton.addEventListener('click', () => {
-    // gameType이 정의되어 있어야 함
-    window.location.href = `/game/ranking/${gameType || 'kr'}/${1}`;
 });
 
 wordInput.addEventListener('keypress', checkInput);
@@ -453,16 +443,16 @@ function socketConnect() {
     //승리
     socket.onWin((data) => {
         isWin = true;
-        console.log("you win");
-        console.log(data);
+        myScore = data.your_score;
+        opponentScore = data.opponent_score;
         gameOver();
     })
 
     //패배
     socket.onDefeat((data) => {
         isWin = false;
-        console.log("you defeat");
-        console.log(data);
+        myScore = data.your_score;
+        opponentScore = data.opponent_score;
         gameOver();
     })
 
@@ -478,6 +468,7 @@ function socketConnect() {
     socket.onJoinedFailed((data) => {
         console.error(data.message)
     })
+
 }
 
 function makeRoom() {

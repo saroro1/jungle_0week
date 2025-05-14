@@ -43,22 +43,22 @@ def game_main_page():
     return redirect("/game")
 
 
-@app.route('/testgame')
-def test_game():
-    return render_template("./game/acid_game.html")
-
-
-@app.route('/testranking')
-def test_rank():
-    return render_template("./game/ranking.html")
-
-@app.route('/test/makeroom')
-def test_make_room():
-    return render_template("./game/make_room.html")
-
-@app.route('/test/joinroom')
-def test_join_room():
-    return render_template("./game/join_room.html")
+# @app.route('/testgame')
+# def test_game():
+#     return render_template("./game/acid_game.html")
+#
+#
+# @app.route('/testranking')
+# def test_rank():
+#     return render_template("./game/ranking.html")
+#
+# @app.route('/test/makeroom')
+# def test_make_room():
+#     return render_template("./game/make_room.html")
+#
+# @app.route('/test/joinroom')
+# def test_join_room():
+#     return render_template("./game/join_room.html")
 
 
 if __name__ == '__main__':

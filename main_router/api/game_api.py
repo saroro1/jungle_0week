@@ -78,30 +78,47 @@ def set_highscore():
     try:
         data = request.get_json()
         score_type = data.get("score_type")
-        score = data.get("score")
+        requested_score = data.get("score")
 
-        if not all([score_type, isinstance(score, int)]):
-            return jsonify({"error": "잘못된 요청입니다"}), 400
+        if not all([score_type, isinstance(requested_score, int)]):
+            return jsonify({"error": "잘못된 요청 파라미터입니다."}), 400
         if score_type not in word_type:
-            return jsonify({"error": "잘못된 요청입니다"}), 400
+            return jsonify({"error": "지원되지 않는 점수 타입입니다."}), 400
 
         user_id = g.current_user.id
-        result = UserEntity.setHighScore(user_id=user_id, score_type=score_type, score=score)
+        
+        user_doc_for_score = UserEntity.collection.find_one(
+            {"user_id": user_id},
+            {f"high_score.{score_type}": 1}
+        )
+        
+        if not user_doc_for_score:
+             print(f"Critical: User {user_id} identified by auth_middleware, but not found in DB for highscore check.")
+             return jsonify({"error": "사용자 정보를 찾는 데 문제가 발생했습니다."}), 500
 
-        if result is None:
-            return jsonify({"result": "최고 기록이 아니거나 사용자 정보를 찾을 수 없습니다."})
-        if result.modified_count == 0 and result.matched_count > 0 :
-             return jsonify({"result": "최고 기록이 아니거나 사용자 정보를 찾을 수 없습니다."})
-        elif result.modified_count > 0:
-            return jsonify({"result": "하이스코어가 업데이트되었습니다."})
-        else:
-            return jsonify({"error": "사용자 정보를 찾을 수 없습니다."}), 404
+        current_db_high_score = user_doc_for_score.get("high_score", {}).get(score_type, 0)
+        
+        is_new_score_a_highscore = (requested_score >= current_db_high_score)
 
-    except ValueError as ve:
-        return jsonify({"error": str(ve)}), 400
+        UserEntity.setHighScore(user_id=user_id, score_type=score_type, score=requested_score)
+
+        my_ranking_info = UserEntity.getMyRanking(user_id=user_id, type_word=score_type)
+        my_ranking = -1 
+        if my_ranking_info and my_ranking_info.get('score', 0) > 0:
+            my_ranking = my_ranking_info['ranking']
+        
+        response_data = {
+            "is_highscore": is_new_score_a_highscore,
+            "my_ranking": my_ranking,
+            "word_type": score_type
+        }
+        
+        return jsonify({"result": response_data}), 200
+
     except Exception as e:
-        print(e)
-        return jsonify({"error": "서버 오류가 발생했습니다"}), 500
+        import traceback
+        print(f"Error in set_highscore for user {g.current_user.id if g.get('current_user') else 'Unknown'}: {e}\\n{traceback.format_exc()}")
+        return jsonify({"error": "서버 내부 오류가 발생했습니다."}), 500
 
 
 @game_api_router.route("/my_rank", methods=["GET"])

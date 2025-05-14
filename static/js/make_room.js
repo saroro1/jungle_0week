@@ -1,6 +1,7 @@
 
 import { SocketClient } from "./sdk/socket.js"; 
 const gameContainer = document.getElementById('game-container');
+const copyBtn = document.getElementById("copy");
 
 import { GameHelper } from "./sdk/game.js";
 function gametest() {
@@ -12,7 +13,7 @@ function gametest() {
     const gameOverScreen = document.getElementById('game-over-screen');
     const startButton = document.getElementById('start-button');
     const finalScoreDisplay = document.getElementById('final-score');
-    const userNickName = document.getElementById('user-nickname');
+    
     const newHighScore = document.getElementById('new-high-score');
 
     const countdownDisplay = document.getElementById('countdown');
@@ -224,7 +225,6 @@ function gametest() {
 
         wordInput.disabled = true;
         finalScoreDisplay.textContent = isWin? "Victory" : "Defeat";
-        userNickName.textContent = (response.result && response.result.nickname) ? response.result.nickname : "-";
 
         gameOverScreen.style.display = 'flex';
         sounds["gameOver"].play()
@@ -377,12 +377,14 @@ function gametest() {
     });
 
     socket.onDefeat((data)=>{
+        isWin=false;
         console.log("you defeat");
         console.log(data);
         gameOver();
     })
 
     socket.onWin((data)=>{
+        isWin=true;
         console.log("you win");
         console.log(data);
         gameOver();
@@ -391,8 +393,8 @@ function gametest() {
     //소켓 기본 연결
     socket.onLifeChange((data)=>{
         console.log(data.new_life);
-        lives = new_life;
-        livesDisplay.textContent = new_life;
+        lives = data.new_life;
+        livesDisplay.textContent = data.new_life;
     })
 
     socket.onShootWord((data)=>{
@@ -404,7 +406,7 @@ function gametest() {
     //TODO opponent life change
     socket.onOpponentLifeChange((data)=>{
         console.log(data.new_life);
-        opponentLivesDisplay.textContent = new_life;
+        opponentLivesDisplay.textContent = data.new_life;
     })
 
     // 페이지 로드 시 초기화
@@ -412,7 +414,7 @@ function gametest() {
     startGame(3);
 }
 
-const socket = new SocketClient("http://127.0.0.1:9001");
+const socket = new SocketClient("http://172.21.100.117:9001");
 const printLink = document.getElementById("link");
 const startGame2 = document.getElementById("start-button-2");
 
@@ -450,5 +452,8 @@ startGame2.addEventListener("click",()=>{
         console.log(data);
     });
 });
+copyBtn.addEventListener("click", ()=>{
+    navigator.clipboard.writeText(printLink.textContent);
+})
 socketConnect();
 makeRoom();

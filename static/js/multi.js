@@ -60,7 +60,14 @@ let animationFrameId;
 let isPaused = false;      // 일시 정지 상태 여부
 let gameEnd = false;
 
+function wait(num){
 
+    return new Promise((res,rej)=>{
+        setTimeout(()=>{
+            res()
+        },num)
+    })
+}
 // word class
 class ActiveWord {
     y = 0; // 내부 y 위치 (float)
@@ -477,8 +484,9 @@ function socketConnect() {
     });
 
     //상대 탈주
-    socket.onOpponentLeftGame((data) => {
+    socket.onOpponentLeftGame(async (data) => {
         alert("상대방이 나갔습니다.");
+        await wait(100);
         window.location.replace("/");
     });
 

@@ -45,23 +45,7 @@ function goToMulti(isHost) {
   }`;
 }
 
-function updateStartAndRankingButtons() {
-  const selectBox = document.getElementById("modeSelectDropdown");
-  const rankingButton = document.getElementById("rankingButton");
-  const selectedMode = selectBox.value;
 
-  const rankingUrlTemplate =
-    "{{ url_for('game.ranking', type_word='TEMP_WORD', page=0) }}";
-
-  if (selectedMode) {
-    rankingButton.href = rankingUrlTemplate.replace(
-      "TEMP_WORD",
-      encodeURIComponent(selectedMode)
-    );
-  } else {
-    rankingButton.href = rankingUrlTemplate.replace("TEMP_WORD", "");
-  }
-}
 
 document.addEventListener("DOMContentLoaded", function () {
   // 이벤트 연결
@@ -75,11 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
     closeMultiBtn.addEventListener("click", closeMultiModal);
   }
 
-  document
-    .getElementById("modeSelectDropdown")
-    .addEventListener("change", updateStartAndRankingButtons);
-
-  updateStartAndRankingButtons();
 });
 
 singleButton.addEventListener("click", () => {
@@ -87,3 +66,8 @@ singleButton.addEventListener("click", () => {
   const typeDropdwon = document.getElementById("modeSelectDropdown");
   window.location.href = `/game/play/${typeDropdwon.value}`;
 });
+
+rankingButton.addEventListener("click",()=>{
+  const typeDropdwon = document.getElementById("modeSelectDropdown");
+  window.location.href = `/game/ranking/${typeDropdwon.value}/1`;
+})

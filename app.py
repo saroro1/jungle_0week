@@ -13,7 +13,7 @@ from main_router.socket import socketio
 from constant import DBContainer, word_type
 
 app = Flask(__name__, static_url_path='/static')
-socketio.init_app(app, cors_allowed_origins="*", async_mode='threading')
+socketio.init_app(app, cors_allowed_origins="*", async_mode='eventlet')
 
 from pymongo import MongoClient, DESCENDING
 

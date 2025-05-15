@@ -49,7 +49,7 @@ sounds["countDown"].volume = 0.5
 const wordList = [];
 let myScore = 0;
 let opponentScore = 0;
-let lives = 5;
+let lives = 3;
 let activeWords = []; // ActiveWord 클래스
 
 let gameType = "none";
@@ -148,9 +148,57 @@ class ActiveWord {
         return false;
     }
 
+    async boomEffect() {
+        if (!this.wordElement || !this.wordElement.parentNode) {
+            console.warn("boomEffect: target element (this.wordElement) does not exist or is not in the DOM.");
+            return;
+        }
+
+        const boom = document.createElement('img');
+        boom.style.width = "50px"; // 크기를 좀 더 키워 잘 보이도록 수정 (원하는 크기로 조절)
+        boom.style.height = "50px";
+        boom.style.position = 'absolute'; // 절대 위치 사용
+        boom.style.zIndex = "1000"; // 다른 요소들 위에 보이도록 z-index 설정
+
+        // wordElement의 실제 화면상 위치를 가져옵니다.
+        const rect = this.wordElement.getBoundingClientRect();
+
+        // getBoundingClientRect는 viewport 기준 좌표이므로, 스크롤 위치를 고려해야 할 수 있습니다.
+        // boom 이미지를 document.body에 직접 추가한다면 다음과 같이 설정합니다.
+        boom.style.top = `${rect.top + window.scrollY}px`;
+        boom.style.left = `${rect.left + window.scrollX}px`;
+
+        // 만약 wordElement의 부모 요소 내에서 위치를 잡고 싶다면,
+        // 부모 요소의 position이 relative, absolute, fixed여야 하고,
+        // top, left 계산이 달라져야 합니다.
+        // 예: boom.style.top = `${this.wordElement.offsetTop}px`;
+        //     boom.style.left = `${this.wordElement.offsetLeft}px`;
+        //     // 이 경우 boom 이미지는 this.wordElement.parentNode에 추가하는 것이 좋습니다.
+
+        boom.src = "/static/asset/img/explosion.gif"; // 이미지 경로 확인
+
+        // 이미지를 DOM에 추가해야 화면에 보입니다.
+        // 일반적으로 document.body에 추가하거나, wordElement의 부모에 추가합니다.
+        document.body.appendChild(boom);
+        // 또는: this.wordElement.parentNode.appendChild(boom); (wordElement가 DOM에 연결되어 있을 때)
+
+
+        try {
+            await wait(500); // 0.5초 대기
+        } catch (error) {
+            console.error("Error during wait:", error);
+        } finally {
+            // 대기 후 이미지를 DOM에서 제거합니다.
+            if (boom.parentNode) { // DOM에 아직 있는지 확인 후 제거
+                boom.remove();
+            }
+        }
+    }
+
     removeWord(matched) {
         // console.log("call removeWord");
         // 화면에서 제거
+        this.boomEffect();
         this.wordElement.remove();
 
         if (!matched) { // 바닥에 닿았을 경우

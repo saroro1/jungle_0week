@@ -43,4 +43,4 @@ def _handle_auth_fail(use_redirect: bool):
 
 
 def redirect_to_login():
-    return render_template("./auth/sign_in.html")
+    return render_template("./auth/sign_in_error.html")

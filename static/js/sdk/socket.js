@@ -308,6 +308,15 @@ export class SocketClient {
   }
 
   /**
+ * 상대방이 게임을 떠났을 때 호출될 콜백을 등록합니다.
+ * @param {(data: { message: string }) => void} callback
+ */
+  onOpponentLeftGame(callback) {
+    this.socket?.on('opponent_left_game', callback);
+  }
+
+
+  /**
    * 서버로부터 일반 오류 발생 시 호출될 콜백을 등록합니다.
    * @param {(data: { message: string, details?: any }) => void} callback
    */

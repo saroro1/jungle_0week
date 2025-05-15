@@ -474,7 +474,13 @@ function socketConnect() {
     socket.onJoinedFailed((data) => {
         loadingIndicator.classList.add("hidden");
         alert("방 참가에 실패하였습니다.");
-    })
+    });
+
+    //상대 탈주
+    socket.onOpponentLeftGame((data) => {
+        alert("상대방이 나갔습니다.");
+        window.location.replace("/");
+    });
 
 }
 

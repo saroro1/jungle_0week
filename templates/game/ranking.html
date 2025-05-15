@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +10,17 @@
         {% elif current_type == 'complex' %}복합
         {% else %}{{ current_type.upper() }}{% endif %} 랭킹 - Jungle Typing Game
     </title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ranking.css') }}">
 </head>
+
 <body>
     <div class="start-menu">
         <header class="menu-header">
             <img src="{{ url_for('static', filename='asset/img/profile.png') }}" alt="User" class="user-icon">
             <span class="user-name">
-                랭킹 - 
+                랭킹 -
                 {% if current_type == 'kr' %}한글
                 {% elif current_type == 'en' %}영어
                 {% elif current_type == 'complex' %}혼합
@@ -24,64 +28,85 @@
             </span>
         </header>
         <main class="menu-content">
-            <div class="left-panel">
+            <div class="left-panel relative">
                 <ul>
                     {% for i in range(3) %}
-                        {% set player = data.top_player[i] if i < data.top_player|length else none %}
-                        {% set rank_num_str = ['first', 'second', 'third'][i] %}
-                        <li>
-                            <img src="{{ url_for('static', filename='asset/img/' + rank_num_str + ('.png' if rank_num_str == 'first' else '.jpeg')) }}" alt="{{ i+1 }}등" class="item-icon">
-                            <div class="item-text">
-                                <span class="item-title">{{ i+1 }}등</span>
-                                <span class="item-subtitle">{{ player.nickname if player else '-' }} ({{ player.score if player and player.score is not none else '-' }}점)</span>
-                            </div>
+                    {% set player = data.top_player[i] if i < data.top_player|length else none %} {% set
+                        rank_num_str=['first', 'second' , 'third' ][i] %} <li>
+                        <img src="{{ url_for('static', filename='asset/img/' + rank_num_str + ('.png' if rank_num_str == 'first' else '.jpeg')) }}"
+                            alt="{{ i+1 }}등" class="item-icon">
+                        <div class="item-text">
+                            <span class="item-title">{{ i+1 }}등</span>
+                            <span class="item-subtitle">{{ player.nickname if player else '-' }} ({{ player.score if
+                                player and player.score is not none else '-' }}점)</span>
+                        </div>
                         </li>
-                    {% endfor %}
-                    <li class="separator"></li>
-                    {% if data.ranking %}
-                        {% for item in data.ranking %}
-                            <li>
-                                <span class="item-ranking-number">{{ item.ranking }}등</span>
-                                <span class="item-subtitle">{{ item.nickname }} ({{ item.score if item.score is not none else '-' }}점)</span>
-                            </li>
                         {% endfor %}
-                    {% else %}
+                        <li class="separator"></li>
+                        <div class="loading-container hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" id="loading-indicator">
+                            로딩하는 중...
+                            <div role="status">
+                                <svg aria-hidden="true"
+                                    class="w-10 h-10 ml-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="currentColor" />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentFill" />
+                                </svg>
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        {% if data.ranking %}
+                        {% for item in data.ranking %}
+                        <li>
+                            <span class="item-ranking-number">{{ item.ranking }}등</span>
+                            <span class="item-subtitle">{{ item.nickname }} ({{ item.score if item.score is not none
+                                else '-' }}점)</span>
+                        </li>
+                        {% endfor %}
+                        {% else %}
                         <li>
                             <span class="item-subtitle" style="text-align: center; width: 100%;">랭킹 정보가 없습니다.</span>
                         </li>
-                    {% endif %}
+                        {% endif %}
                 </ul>
             </div>
             <div class="right-panel">
                 <ul>
-                    <li class = "no-hover">
-                        <span class = "item-title no-hover">
+                    <li class="no-hover">
+                        <span class="item-title no-hover">
                             모드 선택
                         </span>
                     </li>
                     <li data-lang="kr" class="{{ 'active' if current_type == 'kr' else '' }} change_btn">
-                            <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
-                            <span class="item-title-right">한글</span>
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon"
+                            class="item-icon-right">
+                        <span class="item-title-right">한글</span>
                     </li>
                     <li data-lang="en" class="{{ 'active' if current_type == 'en' else '' }} change_btn">
-                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon"
+                            class="item-icon-right">
                         <span class="item-title-right">영어</span>
                     </li>
                     <li data-lang="complex" class="{{ 'active' if current_type == 'complex' else '' }} change_btn">
-                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon" class="item-icon-right">
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon"
+                            class="item-icon-right">
                         <span class="item-title-right">복합</span>
                     </li>
 
                     <li class="separator-right"></li>
                 </ul>
                 <ul>
-                    <li class = "no-hover">
-                        <span class = "item-title no-hover">
+                    <li class="no-hover">
+                        <span class="item-title no-hover">
                             내 최고 등수 (
-                                {%- if current_type == 'kr' %}한글
-                                {%- elif current_type == 'en' %}영어
-                                {%- elif current_type == 'complex' %}혼합
-                                {%- else %}{{ current_type.upper() }}{% endif -%}
+                            {%- if current_type == 'kr' %}한글
+                            {%- elif current_type == 'en' %}영어
+                            {%- elif current_type == 'complex' %}혼합
+                            {%- else %}{{ current_type.upper() }}{% endif -%}
                             )
                         </span>
                     </li>
@@ -89,7 +114,9 @@
                         <span class="item-ranking-number">
                             {{ data.my_nickname if data.my_nickname else '-' }}
                         </span>
-                        <span class="item-title-right">{{ data.my_ranking if data.my_ranking != -1 and data.my_ranking is not none else '-' }} 등 ({{ data.my_score if data.my_score is not none else '-' }}점)</span>
+                        <span class="item-title-right">{{ data.my_ranking if data.my_ranking != -1 and data.my_ranking
+                            is not none else '-' }} 등 ({{ data.my_score if data.my_score is not none else '-'
+                            }}점)</span>
                     </li>
                 </ul>
             </div>
@@ -97,23 +124,27 @@
         <footer class="menu-footer">
             <div class="all-programs {% if page <= 1 %}disabled{% endif %}">
                 {% if page > 1 %}
-                    <a href="{{ url_for('game.ranking', type_word=current_type, page=page-1) }}">
-                        <span class="arrow-icon">◀</span> 이전 페이지
-                    </a>
-                {% else %}
+                <a class="on" href="{{ url_for('game.ranking', type_word=current_type, page=page-1) }}">
                     <span class="arrow-icon">◀</span> 이전 페이지
+                </a>
+                {% else %}
+                <a class="off">
+                    <span class="arrow-icon">◀</span> 이전 페이지
+                </a>
+
                 {% endif %}
             </div>
             <div class="all-programs {% if page >= total_pages %}disabled{% endif %}">
-                {% if page < total_pages %}
-                    <a href="{{ url_for('game.ranking', type_word=current_type, page=page+1) }}">
-                        다음 페이지 <span class="arrow-icon">▶</span>
-                    </a>
-                {% else %}
+                {% if page < total_pages %} <a class="on"
+                    href="{{ url_for('game.ranking', type_word=current_type, page=page+1) }}">
                     다음 페이지 <span class="arrow-icon">▶</span>
-                {% endif %}
+                    </a>
+                    {% else %}
+                    <a class="off">다음 페이지 <span class="arrow-icon">▶</span></a>
+
+                    {% endif %}
             </div>
-            <div class = "padding-right-footer">
+            <div class="padding-right-footer">
                 <button class="turn-off">
                     <a href="{{ url_for('page_main') }}">
                         메인으로
@@ -124,14 +155,23 @@
     </div>
 </body>
 <script>
-      document.addEventListener('DOMContentLoaded', () => {
-      const baseUrl = "{{ url_for('game.ranking', type_word='__TYPE__', page=page) }}";
-      document.querySelectorAll('.change_btn').forEach(el => {
-        el.addEventListener('click', () => {
-          const lang = el.getAttribute('data-lang');
-          window.location.href = baseUrl.replace('__TYPE__', lang);
+    document.addEventListener('DOMContentLoaded', () => {
+        const baseUrl = "{{ url_for('game.ranking', type_word='__TYPE__', page=page) }}";
+        document.querySelectorAll('.change_btn').forEach(el => {
+            el.addEventListener('click', () => {
+                const lang = el.getAttribute('data-lang');
+                window.location.href = baseUrl.replace('__TYPE__', lang);
+            });
         });
-      });
+        document.querySelectorAll(".off").forEach((e) => e.addEventListener("click", () => {
+            alert("페이지를 이동할 수 없습니다.");
+        }))
+        document.querySelectorAll(".on").forEach((e) => e.addEventListener("click", () => {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            loadingIndicator.classList.remove("hidden");
+
+        }));
     });
 </script>
+
 </html>

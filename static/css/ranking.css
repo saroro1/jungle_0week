@@ -19,7 +19,8 @@ a:visited{
 }
 
 .start-menu {
-    width: 400px; /* Approximate width from image */
+    min-width: 400px;
+    max-width: 800px; /* Approximate width from image */
     border: 1px solid #003C74;
     box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
     background-color: #F0F0F0; /* Light gray for left panel as base */

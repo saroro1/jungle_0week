@@ -1,1 +1,1 @@
-word_type = ["en", "kr", "complex"]
+word_type = ["en", "kr", "complex","python"]

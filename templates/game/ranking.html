@@ -8,6 +8,7 @@
         {% if current_type == 'kr' %}한글
         {% elif current_type == 'en' %}영어
         {% elif current_type == 'complex' %}복합
+        {% elif current_type == 'python' %}파이썬
         {% else %}{{ current_type.upper() }}{% endif %} 랭킹 - Jungle Typing Game
     </title>
     <!-- Tailwind CDN -->
@@ -24,6 +25,7 @@
                 {% if current_type == 'kr' %}한글
                 {% elif current_type == 'en' %}영어
                 {% elif current_type == 'complex' %}혼합
+                {% elif current_type == 'python' %}파이썬
                 {% else %}{{ current_type.upper() }}{% endif %}
             </span>
         </header>
@@ -96,6 +98,11 @@
                             class="item-icon-right">
                         <span class="item-title-right">복합</span>
                     </li>
+                    <li data-lang="python" class="{{ 'active' if current_type == 'python' else '' }} change_btn">
+                        <img src="{{ url_for('static', filename='asset/img/folder.png') }}" alt="Folder Icon"
+                            class="item-icon-right">
+                        <span class="item-title-right">파이썬</span>
+                    </li>
 
                     <li class="separator-right"></li>
                 </ul>
@@ -106,6 +113,7 @@
                             {%- if current_type == 'kr' %}한글
                             {%- elif current_type == 'en' %}영어
                             {%- elif current_type == 'complex' %}혼합
+                            {%- elif current_type == 'python' %}파이썬
                             {%- else %}{{ current_type.upper() }}{% endif -%}
                             )
                         </span>

@@ -31,20 +31,65 @@ import { GameHelper } from "./sdk/game.js";
     sounds["countDown"].volume = 0.5
 
     // 게임 설정 및 상태 변수
+
+    const settingByType = {
+        "kr":{
+            "lives":3,
+            "generationRate": 2000,
+            "updateRate": 50,
+            "speedConst": 0.2,
+            "generationBlock": 100,
+            "MINGENERATIONTIME": 500,
+        },
+        "en":{
+            "lives":3,
+            "generationRate": 2500,
+            "updateRate": 50,
+            "speedConst": 0.2,
+            "generationBlock": 100,
+            "MINGENERATIONTIME": 500,
+        },
+        "complex":{
+            "lives":3,
+            "generationRate": 2500,
+            "updateRate": 50,
+            "speedConst": 0.2,
+            "generationBlock": 100,
+            "MINGENERATIONTIME": 500,
+        },
+        "python":{
+            "lives":5,
+            "generationRate": 3000,
+            "updateRate": 50,
+            "speedConst": 0.,
+            "generationBlock": 50,
+            "MINGENERATIONTIME": 1000,
+        },
+        "none":{
+            "lives":3,
+            "generationRate": 2000,
+            "updateRate": 50,
+            "speedConst": 0.2,
+            "generationBlock": 100,
+            "MINGENERATIONTIME": 500,
+        }
+    }
+
     const wordList = [];
     let gameScore = 0;
     let lives = 3;
     let activeWords = []; // ActiveWord 클래스
     // let gameInterval; // 단어 떨어지는 인터벌 ID (requestAnimationFrame으로 대체)
     let wordGenerationInterval; // 단어 생성 인터벌 ID
-    const generationRate = 2000; // 단어 생성 간격 (ms)
-    const updateRate = 50; // 화면 업데이트 간격 (ms) - 속도 계산에 사용
+    let generationRate = 2000; // 단어 생성 간격 (ms)
+    let updateRate = 50; // 화면 업데이트 간격 (ms) - 속도 계산에 사용
     let difficulty = 0;
-    const speedConst = 0.2;
+    let baseSpeed = 2;
+    let speedConst = 0.2;
     let generationCount = 0;
     const STAGECHANGE = 1;
-    const generationBlock = 100;
-    const MINGENERATIONTIME = 500;
+    let generationBlock = 100;
+    let MINGENERATIONTIME = 500;
     let index = 0;
     const loadBuffer = 5
     let gameType = "none";
@@ -298,7 +343,7 @@ import { GameHelper } from "./sdk/game.js";
 
 
     // 게임 시작 함수
-    async function startGame(initLives = 3) {
+    async function startGame() {
         gameEnd = false;
         resetGameDisplay();
 
@@ -312,7 +357,16 @@ import { GameHelper } from "./sdk/game.js";
         startScreen.style.display = 'none';
         wordInput.disabled = false;
         wordInput.focus();
-        lives = initLives;
+
+        //setting
+        const setting = settingByType[gameType]
+        lives = setting["lives"];
+        generationRate = setting["generationRate"];
+        updateRate = setting["updateRate"];
+        speedConst = setting["speedConst"];
+        generationBlock = setting["generationBlock"];
+        MINGENERATIONTIME = setting["MINGENERATIONTIME"];
+        
         gameScore = 0;
         index = 0;
         difficulty = 0;
@@ -377,7 +431,7 @@ import { GameHelper } from "./sdk/game.js";
             updateWordList();
             return;
         }
-        const baseFallSpeedPerTick = 2 + difficulty * speedConst;
+        const baseFallSpeedPerTick = baseSpeed + difficulty * speedConst;
         const fallSpeedPerSecond = (baseFallSpeedPerTick * 1000) / updateRate;
 
         const newWord = new ActiveWord(wordList[index].word, wordList[index].type, fallSpeedPerSecond);
@@ -534,8 +588,8 @@ import { GameHelper } from "./sdk/game.js";
 
 
     // 이벤트 리스너 설정
-    startButton.addEventListener('click', () => startGame(3));
-    restartButton.addEventListener('click', () => startGame(3));
+    startButton.addEventListener('click', startGame);
+    restartButton.addEventListener('click', startGame);
     goToMainButton.addEventListener('click', () => {
         window.location.replace("/");
     });

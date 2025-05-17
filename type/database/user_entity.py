@@ -14,6 +14,7 @@ class HighScoreDict(TypedDict):
     kr: int
     en: int
     complex : int
+    python: int
 
 
 @dataclass
@@ -93,7 +94,15 @@ class UserEntity:
                 else:
                     complex_rank = -1
 
-                return HighScoreDict(kr=kr_rank, en=en_rank, complex=complex_rank)
+                python_score = high_score.get('python', 0)
+                if python_score > 0:
+                    python_rank = collection.count_documents(
+                        {"high_score.python": {"$gt": python_score}}
+                    ) + 1
+                else:
+                    python_rank = -1
+
+                return HighScoreDict(kr=kr_rank, en=en_rank, complex=complex_rank, python=python_rank)
 
             except Exception as e:
                 print(f"Error calculating ranking for user {user_id}: {e}")

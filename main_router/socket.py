@@ -8,7 +8,7 @@ import random
 DEFAULT_WORD_GENERATION_INTERVAL = 2.0
 DEFAULT_SPEED_RATIO = 8
 
-from constant import eng_word, kor_word
+from constant import eng_word, kor_word, python_function_and_method_names
 from utils.jwt import Jwt
 from jwt import ExpiredSignatureError, InvalidTokenError
 
@@ -16,6 +16,44 @@ from jwt import ExpiredSignatureError, InvalidTokenError
 socketio = SocketIO()
 
 # --- 전역 상수 정의 ---
+DIFFICULTY_SETTING = {
+    "kr":{
+            # "max_lives":3,
+            "generation_interval": 2.0,
+            "updateRate": 50,
+            "base_speed": 50,
+            "speed_ratio": 8,
+            "generationBlock": 100,
+            "min_word_generation_interval": 0.5,
+        },
+        "en":{
+            # "max_lives":3,
+            "generation_interval": 2.5,
+            "updateRate": 50,
+            "base_speed": 50,
+            "speed_ratio": 8,
+            "generationBlock": 100,
+            "min_word_generation_interval": 0.5,
+        },
+        "complex":{
+            # "max_lives":3,
+            "generation_interval": 2.5,
+            "updateRate": 50,
+            "base_speed": 50,
+            "speed_ratio": 8,
+            "generationBlock": 100,
+            "min_word_generation_interval": 0.5,
+        },
+        "python":{
+            # "max_lives":5,
+            "generation_interval": 4.0,
+            "updateRate": 50,
+            "base_speed": 20,
+            "speed_ratio": 4,
+            "generationBlock": 50,
+            "min_word_generation_interval": 1,
+        },
+}
 MIN_WORD_GENERATION_INTERVAL = 0.3  # 최소 단어 생성 간격 (초)
 MAX_VALID_HIT_DURATION = 20.0  # 단어 생성 후 유효한 hit으로 인정되는 최대 시간 (초)
 MAX_LIVES = 5  # 최대 생명력
@@ -86,6 +124,8 @@ def get_single_random_word(game_type: str) -> tuple[str, str] | None:
         source_list = kor_word[:]
     elif game_type == "complex":
         source_list = eng_word[:] + kor_word[:]
+    elif game_type == "python":
+        source_list = python_function_and_method_names[:]
     else:
         print(f"[get_single_random_word] Unknown game_type: {game_type}")
         return None
@@ -259,7 +299,7 @@ def game_loop_for_room(room_id: str):
                 continue
 
             word_text, word_type = word_data
-            speed = 50 + (current_room_state.difficulty * DEFAULT_SPEED_RATIO)
+            speed = DIFFICULTY_SETTING[current_room_state.game_type]["base_speed"] + (current_room_state.difficulty * DIFFICULTY_SETTING[current_room_state.game_type]["speed_ratio"])
             score = 10 + (current_room_state.difficulty * 3)
 
             new_word = GameWord(word=word_text, type=word_type, speed=speed, score=score)
@@ -279,10 +319,10 @@ def game_loop_for_room(room_id: str):
                 current_room_state.difficulty += 2
                 print(f"[GameLoop] Room {room_id} difficulty increased to {current_room_state.difficulty}")
 
-                base_interval = DEFAULT_WORD_GENERATION_INTERVAL
+                base_interval = DIFFICULTY_SETTING[current_room_state.game_type]["generation_interval"]
                 difficulty_reduction = current_room_state.difficulty * 0.15
                 new_interval = base_interval - difficulty_reduction
-                current_generation_interval = max(MIN_WORD_GENERATION_INTERVAL, new_interval)
+                current_generation_interval = max(DIFFICULTY_SETTING[current_room_state.game_type]["min_word_generation_interval"], new_interval)
                 current_speed_for_info = 50 + (current_room_state.difficulty * 14) # difficulty_update 정보용
 
                 print(
@@ -437,7 +477,7 @@ def handle_create_room(data):
     user.is_host = True
     user.room_id = room_id
 
-    new_room = GameRoom(room_id=room_id, game_type=game_type, host_user=user)
+    new_room = GameRoom(room_id=room_id, game_type=game_type, host_user=user,word_generation_interval=DIFFICULTY_SETTING[game_type]["generation_interval"])
     new_room.clients.add(sid)
     rooms[room_id] = new_room
     ws_join_room(room_id, sid=sid)

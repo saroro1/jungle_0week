@@ -96,7 +96,7 @@ export class SocketClient {
 
   /**
    * 새로운 게임 방 생성을 요청합니다.
-   * @param {"kr" | "en" | "complex"} gameType - 게임 타입 (예: 'kr', 'en')
+   * @param {"kr" | "en" | "complex"|"python"} gameType - 게임 타입 (예: 'kr', 'en')
    */
   createRoom(gameType) {
     this.socket?.emit('create_room', { game_type: gameType });

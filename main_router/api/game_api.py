@@ -7,6 +7,7 @@ from flask import Blueprint, g, jsonify, request
 from constant import word_type, DBContainer
 from constant.eng_words import eng_word
 from constant.kor_words import kor_word
+from constant.python_function_name import python_function_and_method_names
 from middleware import auth_middleware
 from type.database.user_entity import UserEntity
 
@@ -28,6 +29,8 @@ def getWord(type_word: str, word_count: int):
             word = kor_word[::]
         elif type_word == "complex":
             word = eng_word[::] + kor_word[::]
+        elif type_word == "python":
+            word = python_function_and_method_names[::]
         else:
             return jsonify({"error": "잘못된 요청입니다"}), 400
         shuffle(word)

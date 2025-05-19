@@ -19,20 +19,23 @@
 </head>
 
 <body>
-    <div id="modal_MakeRoom" class="modal" style="display: block;">
+    <div id="modal_MakeRoom" class="modal z-10" style="display: block;">
         <div class="flex flex-col items-center title-bar relative">
-            <button id="outbutton" class="close-btn absolute top-1 right-2" onclick="window.location.href = '/';">X</button>
+            <button id="outbutton" class="close-btn absolute top-1 right-2"
+                onclick="window.location.href = '/';">X</button>
             <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 생성 중</h2>
+
+            <button class="mt-4 alert-button" id="setting-button">설정하기</button>
 
             <div class="mt-4">
                 <span class="text-black" id="room-link"></span>
             </div>
 
-            <div class="mt-8">
+            <div class="mt-4">
                 <button id="copyButton" class="copy-button">생성하기</button>
             </div>
 
-            <div class="mt-5">
+            <div class="mt-4">
                 <button id="MultiStart_Button" class="multistart-button hidden">
                     게임 시작
                 </button>
@@ -40,10 +43,32 @@
         </div>
     </div>
 
+    <!-- 설정 창 -->
+    <div id="setting-screen" class="overlay z-20 hidden">
+        <div class="window">
+            <span class="window-header"></span>
+            <div class="game-over-content-area">
+                <h1 class="game-over-title">설정창</h1>
+                <div class="flex items-center mb-4">
+                    <input id="is-attack-on" type="checkbox" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="default-checkbox" class="ms-2 text-sm font-medium text-black">
+                        공격 모드</label>
+                </div>
+            </div>
+            <div class="game-over-button-area">
+                <button class="alert-button" id="confirm-setting">확인</button>
+                <button class="alert-button" id="deni-setting">취소</button>
+            </div>
+
+        </div>
+    </div>
+
 
     <div id="modal_JoinRoom" class="modal" style="display: none;">
         <div class="flex flex-col items-center title-bar">
-            <button id="outbutton" class="close-btn absolute top-1 right-2" onclick="window.location.href = '/';">X</button>
+            <button id="outbutton" class="close-btn absolute top-1 right-2"
+                onclick="window.location.href = '/';">X</button>
             <h2 class="text-4xl mb-4 font-bold mt-20 text-black">방 참여하기</h2>
             <div class="loading-container flex hidden " id="loading-indicator">
                 방에 참가하는 중...

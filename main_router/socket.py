@@ -11,6 +11,7 @@ DEFAULT_SPEED_RATIO = 8
 from constant import eng_word, kor_word, python_function_and_method_names
 from utils.jwt import Jwt
 from jwt import ExpiredSignatureError, InvalidTokenError
+import copy
 
 # SocketIO 인스턴스 생성. 실제 app과의 연결은 메인 app 파일에서 수행.
 socketio = SocketIO()
@@ -58,6 +59,7 @@ MIN_WORD_GENERATION_INTERVAL = 0.3  # 최소 단어 생성 간격 (초)
 MAX_VALID_HIT_DURATION = 20.0  # 단어 생성 후 유효한 hit으로 인정되는 최대 시간 (초)
 MAX_LIVES = 5  # 최대 생명력
 AUTO_MISS_TIMEOUT = 20.0  # 이 시간(초) 동안 플레이어가 단어를 처리하지 않으면 자동으로 miss 처리
+ATTACK_COUNT = 3
 
 
 # --- 데이터 클래스 정의 ---
@@ -97,6 +99,9 @@ class GameRoom:
     difficulty: int = 0
     clients: set[str] = field(default_factory=set) # room에 연결된 client들의 sid 집합
     shot_word_count: int = 0  # 발사된 단어 수 카운터 (난이도 조절용)
+
+    #모드 설정
+    attack_activate: bool = False
 
 
 # --- 전역 상태 관리 ---
@@ -472,12 +477,16 @@ def handle_create_room(data):
     if not game_type:
         emit('room_failed', {'message': '방을 생성하려면 game_type이 필요합니다.'}, room=sid)
         return
+    
+    attack_activate = data.get('attack_activate')
+    if attack_activate != True:
+        attack_activate = False
 
     room_id = str(uuid.uuid4())
     user.is_host = True
     user.room_id = room_id
 
-    new_room = GameRoom(room_id=room_id, game_type=game_type, host_user=user,word_generation_interval=DIFFICULTY_SETTING[game_type]["generation_interval"])
+    new_room = GameRoom(room_id=room_id, game_type=game_type, host_user=user,word_generation_interval=DIFFICULTY_SETTING[game_type]["generation_interval"], attack_activate=attack_activate)
     new_room.clients.add(sid)
     rooms[room_id] = new_room
     ws_join_room(room_id, sid=sid)
@@ -657,7 +666,18 @@ def handle_hit(data):
 
     score_delta = hit_word_object.score
     user.score += score_delta
-    user.count += 1
+    if hit_word_object.type != "attack":
+        user.count += 1
+
+    if user.count%3 == 0 and target_room.attack_activate:
+        opponent = _get_opponent(target_room, user)
+        if opponent and opponent.sid in game_users:
+            attack_word = GameWord(hit_word_object.word,"attack",hit_word_object.speed,0)
+            word_payload = asdict(attack_word)
+            word_payload['processed_by'] = list(word_payload['processed_by'])
+            socketio.emit('attack_word', {
+                'opponent_user_id': user.user_id, 'attack_word' : word_payload
+            }, room=opponent.sid)
 
     socketio.emit('score_change', {
         'user_id': user.user_id, 'new_score': user.score, 'score_delta': score_delta

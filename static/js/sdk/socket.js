@@ -97,9 +97,10 @@ export class SocketClient {
   /**
    * 새로운 게임 방 생성을 요청합니다.
    * @param {"kr" | "en" | "complex"|"python"} gameType - 게임 타입 (예: 'kr', 'en')
+   * @param {boolean} attacActivate
    */
-  createRoom(gameType) {
-    this.socket?.emit('create_room', { game_type: gameType });
+  createRoom(gameType, attacActivate=false) {
+    this.socket?.emit('create_room', { game_type: gameType, attack_activate: attacActivate });
   }
 
   /**
@@ -244,6 +245,14 @@ export class SocketClient {
   }
 
   /**
+   * 서버로부터 상대방이 공격 성공 시 호출될 콜백을 등록합니다.
+   * @param {(data: {'opponent_user_id': string, 'attack_word' : GameWord}) => void} callback
+   */
+  onOpponentAttack(callback) {
+    this.socket?.on('attack_word', callback);
+  }
+
+  /**
    * 단어 히트 결과 업데이트 시 호출될 콜백을 등록합니다.
    * @param {(data: { room_id: string, hitter_user_id: string, word_uuid: string, new_score: number, new_count: number, new_life: number, is_heal: boolean }) => void} callback
    */
@@ -323,6 +332,8 @@ export class SocketClient {
   onErrorOccurred(callback) {
     this.socket?.on('error_occurred', callback);
   }
+
+
 
   /**
    * 특정 이벤트에 대한 리스너를 제거합니다.

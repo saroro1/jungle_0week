@@ -8,7 +8,16 @@ const modalMakeRoom = document.getElementById('modal_MakeRoom');
 const roomLink = document.getElementById('room-link');
 const copyButton = document.getElementById('copyButton');
 const gameStartButton = document.getElementById('MultiStart_Button');
+const settingButton = document.getElementById('setting-button');
+    const settingScreen = document.getElementById('setting-screen');
+    const attackCheckBox = document.getElementById('is-attack-on');
+    const confirmSetting = document.getElementById('confirm-setting');
+    const deniSetting = document.getElementById('deni-setting');
 let roomCreated = false;
+let settingOn = false;
+let setting = {
+    "attackActive" : false
+}
 
 //guest modal
 const roomCodeInput = document.getElementById('roomCodeInput');
@@ -104,6 +113,8 @@ class ActiveWord {
             case "heal":
                 this.wordElement.style.color = 'cyan';
                 break
+            case "attack":
+                this.wordElement.style.color = 'red';
             default:
                 { }
         }
@@ -443,6 +454,7 @@ function initScreen() {
         initRoomLink = gameContainer.dataset.roomlink;
         modalJoinRoom.style.display = "block";
         modalMakeRoom.remove();
+        attackCheckBox.remove();
     } else {
         window.location.href = "/404notfound";
     }
@@ -472,6 +484,7 @@ function socketConnect() {
         gameContainer.style.display = 'block';
         if (isHost) {
             modalMakeRoom.style.display = 'none';
+            attackCheckBox.style.display = 'none';
         } else {
             modalJoinRoom.style.display = 'none';
         }
@@ -485,6 +498,13 @@ function socketConnect() {
     //워드 생성
     socket.onShootWord((data) => {
         const newWord = new ActiveWord(data.word, data.uuid, data.type, data.speed);
+        activeWords.push(newWord);
+    });
+
+    //상대 공격
+    socket.onOpponentAttack((data) => {
+        const attackWord = data.attack_word
+        const newWord = new ActiveWord(attackWord.word, attackWord.uuid, attackWord.type, attackWord.speed);
         activeWords.push(newWord);
     });
 
@@ -540,8 +560,8 @@ function socketConnect() {
 
 }
 
-function makeRoom() {
-    socket.createRoom(gameContainer.dataset.gametype);
+function makeRoom(attacActivate) {
+    socket.createRoom(gameContainer.dataset.gametype,attacActivate);
 }
 
 function joinRoom(link) {
@@ -556,9 +576,13 @@ copyButton.addEventListener('click', () => {
         console.log(url);
         window.navigator.clipboard.writeText(url);
     } else {
-        makeRoom();
+        attackCheckBox.style.display = 'none';
+        const attacActivate = attackCheckBox.checked;
+        console.log(`공격하기: ${attacActivate}`)
+        makeRoom(attacActivate);
         copyButton.textContent = "복사하기"
         roomCreated = true;
+        settingButton.classList.add("opacity-50","cursor-not-allowed");
     }
 });
 
@@ -570,6 +594,35 @@ joinRoomButton.addEventListener('click', () => {
     const link = roomCodeInput.value;
     joinRoom(link);
     loadingIndicator.classList.remove("hidden");
+})
+
+settingButton.addEventListener('click', () => {
+    if(roomCreated){
+        alert("설정을 바꾸시려면 방을 다시 만들어 주세요.");
+        return
+    }
+    settingButton.classList.add("cursor-not-allowed");
+    settingScreen.classList.remove("hidden");
+
+    //init
+    attackCheckBox.value = setting.attackActive
+})
+
+function closeSetting(){
+    console.log(setting.attackActive);
+    attackCheckBox.checked = setting.attackActive;
+    settingScreen.classList.add("hidden");
+    settingButton.classList.remove("cursor-not-allowed");
+}
+
+confirmSetting.addEventListener('click', () => {
+    setting.attackActive = attackCheckBox.checked;
+    console.log(`confirm : ${setting.attackActive}`);
+    closeSetting();
+})
+
+deniSetting.addEventListener('click', () => {
+    closeSetting();
 })
 
 //실행 부

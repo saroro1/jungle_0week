@@ -571,7 +571,7 @@ function joinRoom(link) {
 copyButton.addEventListener('click', () => {
     if (roomCreated) {
         console.log("복사하기");
-        let url = window.location.protocol +"://" + window.location.host;
+        let url = window.location.protocol +"//" + window.location.host;
         url+=`/game/multi/${gameType}/guest/${roomLink.textContent}`;
         console.log(url);
         window.navigator.clipboard.writeText(url);

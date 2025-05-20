@@ -114,17 +114,19 @@ export class SocketClient {
   /**
    * 단어 히트를 서버에 알립니다.
    * @param {string} wordUuid - 히트한 단어의 UUID
+   * @param {int} cpm
    */
-  sendHit(wordUuid) {
-    this.socket?.emit('hit', { uuid: wordUuid });
+  sendHit(wordUuid, cpm) {
+    this.socket?.emit('hit', { uuid: wordUuid, cpm: cpm });
   }
 
   /**
    * 단어 미스를 서버에 알립니다.
    * @param {string} wordUuid - 미스한 단어의 UUID
+   * @param {int} cpm
    */
-  sendMiss(wordUuid) {
-    this.socket?.emit('miss', { uuid: wordUuid });
+  sendMiss(wordUuid, cpm) {
+    this.socket?.emit('miss', { uuid: wordUuid, cpm: cpm });
   }
 
   /**
@@ -294,7 +296,7 @@ export class SocketClient {
 
   /**
    * 자신의 점수 변경 시 호출될 콜백을 등록합니다.
-   * @param {(data: { user_id: string, new_score: number, score_delta: number }) => void} callback 
+   * @param {(data: { user_id: string, new_score: number, score_delta: number}) => void} callback 
    */
   onScoreChange(callback) {
     this.socket?.on('score_change', callback);
@@ -306,6 +308,14 @@ export class SocketClient {
    */
   onLifeChange(callback) {
     this.socket?.on('life_change', callback);
+  }
+
+  /**
+   * cpm을 주기적으로 업데이트 합니다.
+   * @param {(data: { cpm: {}})} callback
+   */
+  onWPMUpdate(callback) {
+    this.socket?.on('cpm_update', callback);
   }
 
   /**

@@ -83,6 +83,7 @@ class GameUser:
     score: int = 0
     life: int = 3
     room_id: str | None = None
+    cpm: int = 0
 
 
 @dataclass
@@ -95,6 +96,7 @@ class GameRoom:
     game_started: bool = False
     game_ended: bool = False
     last_word_shoot_time: float = 0.0
+    last_cpm_update_time: float = 0.0
     word_generation_interval: float = 2.0 # 난이도에 따라 감소할 수 있음
     difficulty: int = 0
     clients: set[str] = field(default_factory=set) # room에 연결된 client들의 sid 집합
@@ -294,6 +296,15 @@ def game_loop_for_room(room_id: str):
                 removed_word_for_log = current_room_state.word_list[index_to_remove]
                 del current_room_state.word_list[index_to_remove]
                 print(f"[GameLoop-Cleanup] Word {removed_word_for_log.uuid} removed from room {room_id}.")
+
+        # --- cpm 업데이트 로직 ---
+        if current_time_in_loop - current_room_state.last_cpm_update_time >= 2.0:
+            current_room_state.last_cpm_update_time = time.time()
+            socketio.emit('cpm_update',{'cpm': {
+                current_room_state.host_user.user_id: current_room_state.host_user.cpm,
+                current_room_state.user_guest.user_id: current_room_state.user_guest.cpm
+            }},to= room_id)
+
 
         # --- 단어 생성 로직 ---
         if current_time_in_loop - current_room_state.last_word_shoot_time >= current_generation_interval:
@@ -664,6 +675,7 @@ def handle_hit(data):
         f"[Hit-Success] User {user.user_id} (sid: {sid}) hit word: {hit_word_object.word} in room {target_room.room_id}")
     hit_word_object.processed_by.add(user.user_id)
 
+    user.cpm = data.get('cpm')
     score_delta = hit_word_object.score
     user.score += score_delta
     if hit_word_object.type != "attack":

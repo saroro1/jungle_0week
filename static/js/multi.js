@@ -39,7 +39,13 @@ const goToMainButton = document.getElementById('main-page-button');
 const restartButton = document.getElementById('restart-button');
 const myScoreScreen = document.getElementById('user-score');
 const opponentScoreScreen = document.getElementById('opponent-score');
+const myWpmDisplay = document.getElementById("my-cpm");
+const otherWpmDisplay = document.getElementById("other-cpm");
 let isWin = false;
+let keystrokes = 0;
+let cpm =0;
+let startTime = null;
+let userId = 0;
 
 //음악
 const sounds = {
@@ -213,10 +219,10 @@ class ActiveWord {
         this.wordElement.remove();
 
         if (!matched) { // 바닥에 닿았을 경우
-            socket.sendMiss(this.uuid);
+            socket.sendMiss(this.uuid,cpm);
 
         } else { // 단어를 맞췄을 경우
-            socket.sendHit(this.uuid);
+            socket.sendHit(this.uuid,cpm);
         }
     }
 }
@@ -313,6 +319,26 @@ function updateGame(deltaTime) {
     }
 }
 
+//cpm 계산함수
+function calWPM() {
+    const now = Date.now();
+
+    // 첫 입력이면 시작 시간 기록
+    if (!startTime) {
+        startTime = now;
+    }
+
+    keystrokes++;
+
+    const elapsedMinutes = (now - startTime) / 1000 / 600;
+
+    // 분당 입력 수 계산
+    const keysPerMinute = Math.round(keystrokes / elapsedMinutes);
+    cpm = isFinite(keysPerMinute) ? keysPerMinute : 0;
+    myWpmDisplay.textContent = cpm
+    console.log(`keystroke: ${keystrokes}, WPM: ${keysPerMinute}`)
+}
+
 // 입력 처리 함수
 function checkInput(e) {
     // console.log("check");
@@ -333,6 +359,7 @@ function checkInput(e) {
             // console.log("fail");
         }
     }
+    calWPM();
 }
 
 
@@ -464,8 +491,14 @@ function socketConnect() {
     socket.connect();
     socket.authenticate(sessionStorage.getItem("_auth_token"));
     //소켓 listen
+    socket.onAuthSuccess((data) => {
+        userId = data.user_id;
+    })
+
     socket.onAuthFailed((data) => {
         console.error(data.message);
+        alert("유저 인증에 실패하였습니다. 다시 로그인 해주세요.")
+        window.location.replace = "/auth/sign_out";
     });
 
     socket.onRoomFailed((data) => {
@@ -500,6 +533,16 @@ function socketConnect() {
         const newWord = new ActiveWord(data.word, data.uuid, data.type, data.speed);
         activeWords.push(newWord);
     });
+
+    //점수 변경
+    socket.onWPMUpdate((data) => {
+        const keys = Object.keys(data.cpm);
+        keys.forEach((id) => {
+            if(id != userId){
+                otherWpmDisplay.textContent = data.cpm[id];
+            }
+        });
+    })
 
     //상대 공격
     socket.onOpponentAttack((data) => {
